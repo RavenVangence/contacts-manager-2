@@ -1,0 +1,41 @@
+# Ignore Visual Studio working files and build outputs
+
+# VS local settings and caches
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# VS Copilot/indices noise
+.vs/**/CopilotIndices/
+.vs/**/FileContentIndex/
+.vs/**/*.vsidx
+.vs/**/*.db
+.vs/**/*.db-shm
+.vs/**/*.db-wal
+
+# Build outputs
+bin/
+obj/
+Debug/
+Release/
+[Bb]uild/
+
+# VS Code / JetBrains
+.vscode/
+.idea/
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.assets.json
+
+# Logs and caches
+*.log
+*.cache
+
+# Others
+*.local.json
