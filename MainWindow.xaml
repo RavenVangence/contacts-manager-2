@@ -115,7 +115,8 @@
 
                             <!-- Right side: Export and Save buttons -->
                             <StackPanel Grid.Column="1"
-                                        Orientation="Horizontal">
+                                        Orientation="Horizontal"
+                                        Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Button Style="{StaticResource GhostButton}"
                                         Command="{Binding ExportCommand}"
                                         ToolTip="Export contacts to an Excel file">
@@ -136,7 +137,7 @@
                                                    Text="&#xE74E;"
                                                    VerticalAlignment="Center"
                                                    Margin="0,0,6,0"/>
-                                        <TextBlock Text="Save to Database"/>
+                                        <TextBlock Text="Save"/>
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
@@ -146,11 +147,13 @@
                         <Border DockPanel.Dock="Top"
                                 Height="1"
                                 Background="{StaticResource BorderBrushSoft}"
-                                Margin="0,8,0,16"/>
+                                Margin="0,8,0,16"
+                                Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
                         <!-- Search and Sort on same line -->
                         <Grid DockPanel.Dock="Top"
-                              Margin="0,0,0,12">
+                              Margin="0,0,0,12"
+                              Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
                             <!-- All controls on the left side -->
                             <StackPanel Orientation="Horizontal"
                                         VerticalAlignment="Center">
@@ -209,12 +212,34 @@
                         </Grid>
                     </DockPanel>
 
-                    <ScrollViewer Grid.Row="1"
-                                  VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer x:Name="MainScrollViewer"
+                                  Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Margin="0,0,8,0"
+                                  CanContentScroll="False">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar">
+                                <Setter Property="Width"
+                                        Value="8"/>
+                            </Style>
+                        </ScrollViewer.Resources>
                         <StackPanel>
+                            <!-- No data message -->
+                            <Grid Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                                <TextBlock Text="No contacts available. Add a contact or import data to get started."
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           Foreground="{StaticResource SubtleTextBrush}"
+                                           FontSize="16"
+                                           Margin="20,40"/>
+                            </Grid>
+
                             <!-- Table Header -->
                             <Grid Background="{StaticResource BorderBrushSoft}"
-                                  Margin="0,0,0,1">
+                                  Margin="0,0,0,1"
+                                  Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="200"/>
                                     <ColumnDefinition Width="200"/>
@@ -226,27 +251,27 @@
                                 <TextBlock Grid.Column="0"
                                            Text="Name"
                                            FontWeight="Bold"
-                                           Padding="12,8"
+                                           Padding="12,16"
                                            Foreground="{StaticResource TextBrush}"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Surname"
                                            FontWeight="Bold"
-                                           Padding="12,8"
+                                           Padding="12,16"
                                            Foreground="{StaticResource TextBrush}"/>
                                 <TextBlock Grid.Column="2"
                                            Text="Phone Number"
                                            FontWeight="Bold"
-                                           Padding="12,8"
+                                           Padding="12,16"
                                            Foreground="{StaticResource TextBrush}"/>
                                 <TextBlock Grid.Column="3"
                                            Text="Used"
                                            FontWeight="Bold"
-                                           Padding="12,8"
+                                           Padding="12,16"
                                            Foreground="{StaticResource TextBrush}"/>
                                 <TextBlock Grid.Column="4"
                                            Text="Actions"
                                            FontWeight="Bold"
-                                           Padding="12,8"
+                                           Padding="12,16"
                                            Foreground="{StaticResource TextBrush}"/>
                             </Grid>
 
@@ -254,7 +279,12 @@
                             <ListBox ItemsSource="{Binding ContactsView}"
                                      SelectedItem="{Binding SelectedContact}"
                                      BorderThickness="0"
-                                     ItemContainerStyle="{StaticResource ContactListItem}">
+                                     ItemContainerStyle="{StaticResource ContactListItem}"
+                                     Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     ScrollViewer.CanContentScroll="False"
+                                     Background="Transparent">
                                 <ListBox.InputBindings>
                                     <MouseBinding Gesture="LeftDoubleClick"
                                                   Command="{Binding ContactDoubleClickCommand}"/>
@@ -315,6 +345,20 @@
                                                                        VerticalAlignment="Center"
                                                                        Margin="0,0,4,0"/>
                                                             <TextBlock Text="Edit"
+                                                                       VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                    <Button Command="{Binding DataContext.ToggleUsedCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                            CommandParameter="{Binding}"
+                                                            Style="{StaticResource ToggleButton}"
+                                                            Margin="0,0,4,0"
+                                                            ToolTip="Toggle used status">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                                       Text="&#xE7FC;"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="0,0,4,0"/>
+                                                            <TextBlock Text="Toggle Used"
                                                                        VerticalAlignment="Center"/>
                                                         </StackPanel>
                                                     </Button>
@@ -463,7 +507,7 @@
                                                        Text="&#xE74E;"
                                                        VerticalAlignment="Center"
                                                        Margin="0,0,6,0"/>
-                                            <TextBlock Text="Save to Database"/>
+                                            <TextBlock Text="Save"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Style="{StaticResource GhostButton}"

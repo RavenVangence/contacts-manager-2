@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Windows;
-// ...existing using directives removed for brevity...
+using System.Windows.Controls;
 
 namespace ContactsManager
 {
@@ -14,9 +14,15 @@ namespace ContactsManager
             InitializeComponent();
             Loaded += (_, __) =>
             {
-                if (DataContext is ViewModels.MainViewModel vm && vm.Contacts.Any())
+                if (DataContext is ViewModels.MainViewModel vm)
                 {
-                    vm.SelectedContact = vm.Contacts.First();
+                    // Set scroll compensation reference
+                    vm.ScrollViewer = MainScrollViewer;
+
+                    if (vm.Contacts.Any())
+                    {
+                        vm.SelectedContact = vm.Contacts.First();
+                    }
                 }
             };
         }

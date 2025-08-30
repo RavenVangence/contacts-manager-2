@@ -220,19 +220,19 @@
 
                 <!-- Edit Button - Blue background -->
                 <Style x:Key="EditButton"
-                                TargetType="Button">
+                       TargetType="Button">
                         <Setter Property="Background"
-                                        Value="#0496FF"/>
+                                Value="#0496FF"/>
                         <Setter Property="Foreground"
-                                        Value="White"/>
+                                Value="White"/>
                         <Setter Property="BorderThickness"
-                                        Value="0"/>
+                                Value="0"/>
                         <Setter Property="Padding"
-                                        Value="8,4"/>
+                                Value="8,4"/>
                         <Setter Property="Margin"
-                                        Value="0,0,4,0"/>
+                                Value="0,0,4,0"/>
                         <Setter Property="Cursor"
-                                        Value="Hand"/>
+                                Value="Hand"/>
                         <Setter Property="Template">
                                 <Setter.Value>
                                         <ControlTemplate TargetType="Button">
@@ -244,14 +244,14 @@
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver"
-                                                                        Value="True">
+                                                                 Value="True">
                                                                 <Setter Property="Background"
-                                                                                Value="#0381D9"/>
+                                                                        Value="#0381D9"/>
                                                         </Trigger>
                                                         <Trigger Property="IsPressed"
-                                                                        Value="True">
+                                                                 Value="True">
                                                                 <Setter Property="Background"
-                                                                                Value="#026CB3"/>
+                                                                        Value="#026CB3"/>
                                                         </Trigger>
                                                 </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -261,19 +261,19 @@
 
                 <!-- Delete Button - Red background -->
                 <Style x:Key="DeleteButton"
-                                TargetType="Button">
+                       TargetType="Button">
                         <Setter Property="Background"
-                                        Value="#FF0000"/>
+                                Value="#FF0000"/>
                         <Setter Property="Foreground"
-                                        Value="White"/>
+                                Value="White"/>
                         <Setter Property="BorderThickness"
-                                        Value="0"/>
+                                Value="0"/>
                         <Setter Property="Padding"
-                                        Value="8,4"/>
+                                Value="8,4"/>
                         <Setter Property="Margin"
-                                        Value="0,0,4,0"/>
+                                Value="0,0,4,0"/>
                         <Setter Property="Cursor"
-                                        Value="Hand"/>
+                                Value="Hand"/>
                         <Setter Property="Template">
                                 <Setter.Value>
                                         <ControlTemplate TargetType="Button">
@@ -285,14 +285,55 @@
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver"
-                                                                        Value="True">
+                                                                 Value="True">
                                                                 <Setter Property="Background"
-                                                                                Value="#E60000"/>
+                                                                        Value="#E60000"/>
                                                         </Trigger>
                                                         <Trigger Property="IsPressed"
-                                                                        Value="True">
+                                                                 Value="True">
                                                                 <Setter Property="Background"
-                                                                                Value="#CC0000"/>
+                                                                        Value="#CC0000"/>
+                                                        </Trigger>
+                                                </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <!-- Toggle Used Button - Orange background -->
+                <Style x:Key="ToggleButton"
+                       TargetType="Button">
+                        <Setter Property="Background"
+                                Value="#FF8C00"/>
+                        <Setter Property="Foreground"
+                                Value="White"/>
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+                        <Setter Property="Padding"
+                                Value="8,4"/>
+                        <Setter Property="Margin"
+                                Value="0,0,4,0"/>
+                        <Setter Property="Cursor"
+                                Value="Hand"/>
+                        <Setter Property="Template">
+                                <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                                          VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver"
+                                                                 Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="#E67A00"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed"
+                                                                 Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="#CC6600"/>
                                                         </Trigger>
                                                 </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -337,8 +378,7 @@
                                         <ControlTemplate TargetType="ListBoxItem">
                                                 <Border x:Name="Root"
                                                         BorderBrush="{TemplateBinding BorderBrush}"
-                                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                                        CornerRadius="8">
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
                                                         <ContentPresenter Margin="0"/>
                                                 </Border>
                                                 <ControlTemplate.Triggers>

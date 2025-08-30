@@ -11,10 +11,10 @@ namespace ContactsManager.Converters
         {
             if (value is bool used)
             {
-                // Green tones for used contacts, neutral for unused
+                // Light red for used contacts, light green for unused
                 return used
-                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8F5E8")) // Light green for used
-                    : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F5F5F5")); // Light grey for unused
+                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F5E8E8")) // Light red for used
+                    : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8F5E8")); // Light green for unused
             }
             return new SolidColorBrush(Colors.White);
         }

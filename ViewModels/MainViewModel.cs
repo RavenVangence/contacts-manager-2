@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Controls;
 using Microsoft.Win32;
 using ClosedXML.Excel;
 using ContactsManager.Infrastructure;
@@ -26,6 +27,9 @@ namespace ContactsManager.ViewModels
 
         public ObservableCollection<Contact> Contacts { get; } = new();
         public ICollectionView ContactsView { get; }
+        public ScrollViewer? ScrollViewer { get; set; }
+
+        public bool HasContacts => Contacts.Any();
 
         public string SearchText
         {
@@ -44,7 +48,14 @@ namespace ContactsManager.ViewModels
         public Contact? SelectedContact
         {
             get => _selectedContact;
-            set { if (_selectedContact != value) { _selectedContact = value; OnPropertyChanged(); } }
+            set
+            {
+                if (_selectedContact != value)
+                {
+                    _selectedContact = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public bool IsEditMode
@@ -71,6 +82,7 @@ namespace ContactsManager.ViewModels
         public ICommand SortByUsedCommand { get; }
         public ICommand ContactDoubleClickCommand { get; }
         public ICommand CancelEditCommand { get; }
+        public ICommand ToggleUsedCommand { get; }
 
         public MainViewModel()
         {
@@ -89,6 +101,7 @@ namespace ContactsManager.ViewModels
             SortByUsedCommand = new RelayCommand(() => SortBy(nameof(Contact.Used)));
             ContactDoubleClickCommand = new RelayCommand(OnContactDoubleClick);
             CancelEditCommand = new RelayCommand(CancelEdit);
+            ToggleUsedCommand = new RelayCommand(param => ToggleUsed(param as Contact), _ => true);
         }
 
         private bool FilterContact(object obj)
@@ -105,6 +118,7 @@ namespace ContactsManager.ViewModels
             _contactBeforeEdit = null; // New contact
             var newContact = new Contact();
             Contacts.Insert(0, newContact);
+            OnPropertyChanged(nameof(HasContacts));
             SelectedContact = newContact;
             IsEditMode = true;
         }
@@ -112,13 +126,42 @@ namespace ContactsManager.ViewModels
         private void DeleteSelected(Contact? contact)
         {
             if (contact is null) return;
-            if (SelectedContact == contact)
+
+            // Store current scroll position before deletion
+            var currentScrollPosition = ScrollViewer?.VerticalOffset ?? 0;
+
+            // Store current selection state before deletion
+            var wasSelected = SelectedContact == contact;
+
+            // Remove from collection first - this immediately updates UI
+            Contacts.Remove(contact);
+
+            // Only clear selection if the deleted contact was selected
+            if (wasSelected)
             {
                 SelectedContact = null;
                 IsEditMode = false; // Hide edit mode when deleting
             }
-            Contacts.Remove(contact);
-            ContactsView.Refresh();
+
+            OnPropertyChanged(nameof(HasContacts));
+
+            // Compensate for unwanted scroll behavior
+            if (ScrollViewer != null)
+            {
+                // Scroll up slightly to compensate for the automatic scroll down
+                var compensatedPosition = Math.Max(0, currentScrollPosition - 30);
+                ScrollViewer.Dispatcher.BeginInvoke(() =>
+                {
+                    ScrollViewer.ScrollToVerticalOffset(compensatedPosition);
+                });
+            }
+        }
+
+        private void ToggleUsed(Contact? contact)
+        {
+            if (contact is null) return;
+            contact.Used = !contact.Used;
+            // No need to refresh the entire view, binding will handle the update
         }
 
         private void SaveSelected()
@@ -138,10 +181,10 @@ namespace ContactsManager.ViewModels
             }
 
             // Placeholder for persistence. For now just ensure view refresh.
-            ContactsView.Refresh();
             IsEditMode = false;
             SelectedContact = null;
             _contactBeforeEdit = null;
+            // Removed ContactsView.Refresh() - binding updates automatically handle changes
         }
 
         private void ImportContacts()
@@ -182,6 +225,7 @@ namespace ContactsManager.ViewModels
                     }
 
                     ContactsView.Refresh();
+                    OnPropertyChanged(nameof(HasContacts));
                     MessageBox.Show($"Successfully imported {rows.Count()} contacts.", "Import Complete",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -284,6 +328,7 @@ namespace ContactsManager.ViewModels
                 if (_contactBeforeEdit == null) // New contact was being added
                 {
                     Contacts.Remove(SelectedContact);
+                    OnPropertyChanged(nameof(HasContacts));
                 }
                 else // Existing contact was being edited
                 {
@@ -317,7 +362,7 @@ namespace ContactsManager.ViewModels
 
             ContactsView.SortDescriptions.Clear();
             ContactsView.SortDescriptions.Add(new SortDescription(_currentSortProperty, _currentSortDirection));
-            ContactsView.Refresh();
+            // Removed ContactsView.Refresh() - sort descriptions automatically trigger update
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
