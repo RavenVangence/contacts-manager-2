@@ -28,6 +28,10 @@
                 <MenuItem Header="Exit"
                           Click="Exit_Click"/>
             </MenuItem>
+            <MenuItem Header="Contacts">
+                <MenuItem Header="Open Contacts Manager"
+                          Click="OpenContactsManager_Click"/>
+            </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Add Contact"
                           Command="{Binding AddCommand}"/>
@@ -46,10 +50,8 @@
 
         <!-- Top bar -->
         <Border DockPanel.Dock="Top"
-                Background="{StaticResource CardBrush}"
-                BorderBrush="{StaticResource BorderBrushSoft}"
-                BorderThickness="0,0,0,1"
-                Margin="0,8,0,0">
+                Background="Transparent"
+                BorderThickness="0,0,0,1">
             <Grid Margin="16">
                 <TextBlock Text="Contacts"
                            Style="{StaticResource H1}"

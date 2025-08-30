@@ -49,6 +49,14 @@ namespace ContactsManager
             Application.Current.Shutdown();
         }
 
+        private void OpenContactsManager_Click(object sender, RoutedEventArgs e)
+        {
+            // Since this is already the Contacts Manager application, 
+            // we'll bring the current window to front and focus it
+            this.Activate();
+            this.Focus();
+        }
+
         private void ListBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             // Prevent ListBox from handling mouse wheel events
