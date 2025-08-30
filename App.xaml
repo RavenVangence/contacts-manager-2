@@ -548,5 +548,277 @@
                         <Setter Property="Background"
                                 Value="#8900f2"/>
                 </Style>
+
+                <!-- Modern Tab Styles -->
+                <Style x:Key="ModernTabButton"
+                       TargetType="Button">
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+                        <Setter Property="Foreground"
+                                Value="{StaticResource SubtleTextBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+                        <Setter Property="Padding"
+                                Value="12,8"/>
+                        <Setter Property="Margin"
+                                Value="0,0,2,0"/>
+                        <Setter Property="Height"
+                                Value="36"/>
+                        <Setter Property="MinWidth"
+                                Value="120"/>
+                        <Setter Property="Cursor"
+                                Value="Hand"/>
+                        <Setter Property="Template">
+                                <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Border"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="6"
+                                                        Margin="1"
+                                                        Height="{TemplateBinding Height}">
+                                                        <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                        <ColumnDefinition Width="*"/>
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <!-- Tab Icon -->
+                                                                <TextBlock x:Name="IconBlock"
+                                                                           Grid.Column="0"
+                                                                           FontFamily="Segoe MDL2 Assets"
+                                                                           Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Tag}"
+                                                                           FontSize="14"
+                                                                           VerticalAlignment="Center"
+                                                                           Margin="0,0,8,0"
+                                                                           Foreground="{TemplateBinding Foreground}"/>
+
+                                                                <!-- Tab Title -->
+                                                                <ContentPresenter Grid.Column="1"
+                                                                                  HorizontalAlignment="Center"
+                                                                                  VerticalAlignment="Center"
+                                                                                  RecognizesAccessKey="True"/>
+
+                                                                <!-- Close Button -->
+                                                                <Button x:Name="CloseButton"
+                                                                        Grid.Column="2"
+                                                                        Width="18"
+                                                                        Height="18"
+                                                                        Margin="8,0,0,0"
+                                                                        Background="Transparent"
+                                                                        BorderThickness="0"
+                                                                        VerticalAlignment="Center"
+                                                                        Opacity="0"
+                                                                        Cursor="Hand"
+                                                                        Command="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.CloseCommand}"
+                                                                        CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext}">
+                                                                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                                                   Text="&#xE8BB;"
+                                                                                   FontSize="10"
+                                                                                   Foreground="{StaticResource SubtleTextBrush}"
+                                                                                   HorizontalAlignment="Center"
+                                                                                   VerticalAlignment="Center"/>
+                                                                        <Button.Style>
+                                                                                <Style TargetType="Button">
+                                                                                        <Setter Property="Template">
+                                                                                                <Setter.Value>
+                                                                                                        <ControlTemplate TargetType="Button">
+                                                                                                                <Border Background="{TemplateBinding Background}"
+                                                                                                                        CornerRadius="9"
+                                                                                                                        Width="{TemplateBinding Width}"
+                                                                                                                        Height="{TemplateBinding Height}">
+                                                                                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                                                                                                          VerticalAlignment="Center"/>
+                                                                                                                </Border>
+                                                                                                                <ControlTemplate.Triggers>
+                                                                                                                        <Trigger Property="IsMouseOver"
+                                                                                                                                 Value="True">
+                                                                                                                                <Setter Property="Background"
+                                                                                                                                        Value="{StaticResource SurfaceBrush}"/>
+                                                                                                                        </Trigger>
+                                                                                                                </ControlTemplate.Triggers>
+                                                                                                        </ControlTemplate>
+                                                                                                </Setter.Value>
+                                                                                        </Setter>
+                                                                                </Style>
+                                                                        </Button.Style>
+                                                                </Button>
+                                                        </Grid>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                        <!-- Active Tab -->
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.IsActive}"
+                                                                     Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="{StaticResource CardBrush}"/>
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource TextBrush}"/>
+                                                                <Setter TargetName="Border"
+                                                                        Property="Effect">
+                                                                        <Setter.Value>
+                                                                                <DropShadowEffect Color="Black"
+                                                                                                  Direction="270"
+                                                                                                  ShadowDepth="1"
+                                                                                                  BlurRadius="3"
+                                                                                                  Opacity="0.1"/>
+                                                                        </Setter.Value>
+                                                                </Setter>
+                                                        </DataTrigger>
+
+                                                        <!-- Hover Effect -->
+                                                        <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}"
+                                                                                   Value="True"/>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.IsActive}"
+                                                                                   Value="False"/>
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Background"
+                                                                        Value="{StaticResource SurfaceBrush}"/>
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource TextBrush}"/>
+                                                        </MultiDataTrigger>
+
+                                                        <!-- Show close button on hover if tab is closeable -->
+                                                        <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}"
+                                                                                   Value="True"/>
+                                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.IsCloseable}"
+                                                                                   Value="True"/>
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter TargetName="CloseButton"
+                                                                        Property="Opacity"
+                                                                        Value="1"/>
+                                                        </MultiDataTrigger>
+
+                                                        <!-- Hide icon if no icon specified -->
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.Icon}"
+                                                                     Value="">
+                                                                <Setter TargetName="IconBlock"
+                                                                        Property="Visibility"
+                                                                        Value="Collapsed"/>
+                                                                <Setter TargetName="IconBlock"
+                                                                        Property="Margin"
+                                                                        Value="0"/>
+                                                        </DataTrigger>
+
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.Icon}"
+                                                                     Value="{x:Null}">
+                                                                <Setter TargetName="IconBlock"
+                                                                        Property="Visibility"
+                                                                        Value="Collapsed"/>
+                                                                <Setter TargetName="IconBlock"
+                                                                        Property="Margin"
+                                                                        Value="0"/>
+                                                        </DataTrigger>
+                                                </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <!-- Tab Container Style -->
+                <Style x:Key="TabContainer"
+                       TargetType="Border">
+                        <Setter Property="Background"
+                                Value="{StaticResource CardBrush}"/>
+                        <Setter Property="Padding"
+                                Value="8,6"/>
+                        <Setter Property="BorderThickness"
+                                Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush"
+                                Value="{StaticResource BorderBrushSoft}"/>
+                </Style>
+
+                <!-- Tab Content Style -->
+                <Style x:Key="TabContent"
+                       TargetType="ContentPresenter">
+                        <Setter Property="Margin"
+                                Value="0"/>
+                </Style>
+
+                <!-- Website Navigation Dropdown Style -->
+                <Style x:Key="NavDropdownButton"
+                       TargetType="Button">
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+                        <Setter Property="Foreground"
+                                Value="{StaticResource TextBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+                        <Setter Property="Padding"
+                                Value="16,8"/>
+                        <Setter Property="Height"
+                                Value="36"/>
+                        <Setter Property="Cursor"
+                                Value="Hand"/>
+                        <Setter Property="Template">
+                                <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="6"
+                                                        Height="{TemplateBinding Height}">
+                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                                          VerticalAlignment="Center"
+                                                                          Margin="{TemplateBinding Padding}"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver"
+                                                                 Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="{StaticResource SurfaceBrush}"/>
+                                                        </Trigger>
+                                                </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
+
+                <!-- Dropdown Menu Style -->
+                <Style x:Key="DropdownMenu"
+                       TargetType="StackPanel">
+                        <Setter Property="Background"
+                                Value="{StaticResource CardBrush}"/>
+                        <Setter Property="Margin"
+                                Value="0,4,0,0"/>
+                </Style>
+
+                <!-- Dropdown Menu Item Style -->
+                <Style x:Key="DropdownMenuItem"
+                       TargetType="Button">
+                        <Setter Property="Background"
+                                Value="Transparent"/>
+                        <Setter Property="Foreground"
+                                Value="{StaticResource TextBrush}"/>
+                        <Setter Property="BorderThickness"
+                                Value="0"/>
+                        <Setter Property="Padding"
+                                Value="16,12"/>
+                        <Setter Property="HorizontalAlignment"
+                                Value="Stretch"/>
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Left"/>
+                        <Setter Property="Cursor"
+                                Value="Hand"/>
+                        <Setter Property="Template">
+                                <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                          VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver"
+                                                                 Value="True">
+                                                                <Setter Property="Background"
+                                                                        Value="{StaticResource SurfaceBrush}"/>
+                                                        </Trigger>
+                                                </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                </Setter.Value>
+                        </Setter>
+                </Style>
         </Application.Resources>
 </Application>

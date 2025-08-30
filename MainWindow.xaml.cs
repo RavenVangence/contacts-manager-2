@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.ComponentModel;
+using ContactsManager.ViewModels;
 
 namespace ContactsManager
 {
@@ -11,36 +12,36 @@ namespace ContactsManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainWindowViewModel ViewModel => (MainWindowViewModel)DataContext;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Set the DataContext to the new MainWindowViewModel
+            DataContext = new MainWindowViewModel();
 
             // Handle window closing event
             Closing += MainWindow_Closing;
 
             Loaded += (_, __) =>
             {
-                if (DataContext is ViewModels.MainViewModel vm)
+                // Preload contacts data when the window loads, but stay on Home page
+                if (ViewModel.ContactsViewModel.Contacts.Any())
                 {
-                    // Set scroll compensation reference
-                    vm.ScrollViewer = MainScrollViewer;
-
-                    if (vm.Contacts.Any())
-                    {
-                        vm.SelectedContact = vm.Contacts.First();
-                    }
+                    ViewModel.ContactsViewModel.SelectedContact = ViewModel.ContactsViewModel.Contacts.First();
                 }
+
+                // Ensure we stay on the Home page after loading
+                ViewModel.NavigateToHome();
             };
         }
 
         private void MainWindow_Closing(object? sender, CancelEventArgs e)
         {
-            if (DataContext is ViewModels.MainViewModel vm)
+            if (!ViewModel.CanClose())
             {
-                if (!vm.CanClose())
-                {
-                    e.Cancel = true; // Cancel the closing
-                }
+                e.Cancel = true; // Cancel the closing
             }
         }
 
@@ -51,24 +52,17 @@ namespace ContactsManager
 
         private void OpenContactsManager_Click(object sender, RoutedEventArgs e)
         {
-            // Since this is already the Contacts Manager application, 
-            // we'll bring the current window to front and focus it
-            this.Activate();
-            this.Focus();
+            ViewModel.NavigateToContacts();
         }
 
-        private void ListBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void ContactsNavButton_Click(object sender, RoutedEventArgs e)
         {
-            // Prevent ListBox from handling mouse wheel events
-            e.Handled = true;
+            ViewModel.NavigateToContacts();
+        }
 
-            // Redirect mouse wheel events to the parent ScrollViewer
-            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
-            {
-                RoutedEvent = UIElement.MouseWheelEvent,
-                Source = sender
-            };
-            MainScrollViewer.RaiseEvent(eventArg);
+        private void HomeNavButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NavigateToHome();
         }
     }
 }
