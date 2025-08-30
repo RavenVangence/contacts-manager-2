@@ -23,7 +23,7 @@
                            HorizontalAlignment="Center"
                            Margin="0,0,0,24"/>
                 <TextBlock Text="Welcome to Contacts Manager"
-                           Style="{StaticResource H1}"
+                           Style="{StaticResource H2}"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,16"/>
                 <TextBlock Text="Click the Contacts button above to manage your contacts"
@@ -32,18 +32,7 @@
                            TextAlignment="Center"
                            TextWrapping="Wrap"
                            Margin="0,0,0,24"/>
-                <Button Style="{StaticResource PrimaryButton}"
-                        Click="GoToContacts_Click"
-                        MinWidth="200"
-                        HorizontalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text="&#xE77B;"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,8,0"/>
-                        <TextBlock Text="Go to Contacts"/>
-                    </StackPanel>
-                </Button>
+                
             </StackPanel>
         </Border>
     </Grid>

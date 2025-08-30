@@ -22,7 +22,7 @@ namespace ContactsManager.ViewModels
     {
         private Contact? _selectedContact;
         private string _searchText = string.Empty;
-        private string _currentSortProperty = nameof(Contact.LastName);
+        private string _currentSortProperty = nameof(Contact.FirstName);
         private ListSortDirection _currentSortDirection = ListSortDirection.Ascending;
         private bool _isEditMode = false;
         private bool _isLoading = false;
@@ -110,6 +110,9 @@ namespace ContactsManager.ViewModels
                 }
             }
         }
+
+        public string CurrentSortProperty => _currentSortProperty;
+        public ListSortDirection CurrentSortDirection => _currentSortDirection;
 
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -236,23 +239,6 @@ namespace ContactsManager.ViewModels
         {
             if (SelectedContact != null)
             {
-                // Validation
-                if (string.IsNullOrWhiteSpace(SelectedContact.FirstName?.Trim()))
-                {
-                    MessageBox.Show("First Name is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(SelectedContact.LastName?.Trim()))
-                {
-                    MessageBox.Show("Last Name is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(SelectedContact.Phone?.Trim()))
-                {
-                    MessageBox.Show("Phone Number is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
                 // Determine if this is a new contact or an update
                 bool isNewContact = _contactBeforeEdit == null;
                 string successMessage = isNewContact
@@ -485,6 +471,9 @@ namespace ContactsManager.ViewModels
                 _currentSortProperty = propertyName;
                 _currentSortDirection = ListSortDirection.Ascending;
             }
+
+            OnPropertyChanged(nameof(CurrentSortProperty));
+            OnPropertyChanged(nameof(CurrentSortDirection));
 
             ContactsView.SortDescriptions.Clear();
             ContactsView.SortDescriptions.Add(new SortDescription(_currentSortProperty, _currentSortDirection));

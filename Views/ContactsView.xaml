@@ -142,16 +142,157 @@
                                            VerticalAlignment="Center"
                                            Margin="0,0,8,0"
                                            Style="{StaticResource Body}"/>
-                                <Button Content="Name"
-                                        Style="{StaticResource SortButton}"
-                                        Command="{Binding SortByNameCommand}"/>
-                                <Button Content="Surname"
-                                        Style="{StaticResource SortButton}"
-                                        Command="{Binding SortBySurnameCommand}"/>
-                                <Button Content="Used"
-                                        Style="{StaticResource SortButton}"
+                                <Button Style="{StaticResource SortButton}"
+                                        Command="{Binding SortByNameCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Name"/>
+                                        <TextBlock Text=" &#xE017;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortProperty, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="FirstName"/>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortDirection, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Ascending"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text=" &#xE018;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortProperty, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="FirstName"/>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortDirection, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Descending"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Button>
+                                <Button Style="{StaticResource SortButton}"
+                                        Command="{Binding SortBySurnameCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Surname"/>
+                                        <TextBlock Text=" &#xE017;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortProperty, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="LastName"/>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortDirection, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Ascending"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text=" &#xE018;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortProperty, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="LastName"/>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortDirection, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Descending"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Button>
+                                <Button Style="{StaticResource SortButton}"
                                         Command="{Binding SortByUsedCommand}"
-                                        Margin="0,0,16,0"/>
+                                        Margin="0,0,16,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Used"/>
+                                        <TextBlock Text=" &#xE017;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortProperty, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Used"/>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortDirection, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Ascending"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text=" &#xE018;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortProperty, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Used"/>
+                                                                <Condition Binding="{Binding DataContext.CurrentSortDirection, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                           Value="Descending"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Button>
 
                                 <!-- Search box next to sort buttons -->
                                 <Grid Width="250"
@@ -535,7 +676,7 @@
                                     <TextBlock Text="First name"
                                                VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding SelectedContact.FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+                                             Text="{Binding SelectedContact.FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                                 </Grid>
 
                                 <Grid Margin="0,6"
@@ -547,7 +688,7 @@
                                     <TextBlock Text="Last name"
                                                VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding SelectedContact.LastName, UpdateSourceTrigger=PropertyChanged}"/>
+                                             Text="{Binding SelectedContact.LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                                 </Grid>
 
                                 <Grid Margin="0,6"
@@ -559,7 +700,7 @@
                                     <TextBlock Text="Phone"
                                                VerticalAlignment="Center"/>
                                     <TextBox Grid.Column="1"
-                                             Text="{Binding SelectedContact.Phone, UpdateSourceTrigger=PropertyChanged}"/>
+                                             Text="{Binding SelectedContact.Phone, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                                 </Grid>
 
                                 <Grid Margin="0,6"
@@ -581,6 +722,7 @@
                                             Margin="0,16,0,0">
                                     <Button Style="{StaticResource PrimaryButton}"
                                             Command="{Binding SaveCommand}"
+                                            IsEnabled="{Binding SelectedContact.IsValid}"
                                             ToolTip="Save changes to the current contact (memory only)"
                                             MinWidth="160">
                                         <StackPanel Orientation="Horizontal">

@@ -35,7 +35,7 @@
                         <TextBlock Text="First name"
                                    VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1"
-                                 Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                     </Grid>
 
                     <Grid Margin="0,8">
@@ -46,7 +46,7 @@
                         <TextBlock Text="Last name"
                                    VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1"
-                                 Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                     </Grid>
 
                     <Grid Margin="0,8">
@@ -57,7 +57,7 @@
                         <TextBlock Text="Phone"
                                    VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1"
-                                 Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                     </Grid>
 
                     <Grid Margin="0,8">
@@ -81,6 +81,7 @@
                 <Button Content="Save"
                         Style="{StaticResource PrimaryButton}"
                         Click="SaveButton_Click"
+                        IsEnabled="{Binding IsValid}"
                         MinWidth="80"/>
                 <Button Content="Cancel"
                         Style="{StaticResource GhostButton}"
