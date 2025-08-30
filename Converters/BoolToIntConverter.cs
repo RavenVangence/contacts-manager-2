@@ -6,12 +6,12 @@ namespace ContactsManager.Converters
 {
     public class BoolToIntConverter : IValueConverter
     {
-        // Converts bool to int. By default: true => 1, false => 3
+        // Converts bool to int. By default: true => 1, false => 0
         // Optional ConverterParameter in format "T;F" to specify custom values, e.g. "2;1"
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int trueVal = 1;
-            int falseVal = 3;
+            int falseVal = 0;
 
             if (parameter is string param && param.Contains(";"))
             {

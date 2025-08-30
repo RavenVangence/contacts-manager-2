@@ -67,6 +67,7 @@ namespace ContactsManager.ViewModels
         public ICommand ExportCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand SortByNameCommand { get; }
+        public ICommand SortBySurnameCommand { get; }
         public ICommand SortByUsedCommand { get; }
         public ICommand ContactDoubleClickCommand { get; }
         public ICommand CancelEditCommand { get; }
@@ -84,6 +85,7 @@ namespace ContactsManager.ViewModels
             ExportCommand = new RelayCommand(ExportContacts);
             EditCommand = new RelayCommand(param => EditSelected(param as Contact), _ => true);
             SortByNameCommand = new RelayCommand(() => SortBy(nameof(Contact.FirstName)));
+            SortBySurnameCommand = new RelayCommand(() => SortBy(nameof(Contact.LastName)));
             SortByUsedCommand = new RelayCommand(() => SortBy(nameof(Contact.Used)));
             ContactDoubleClickCommand = new RelayCommand(OnContactDoubleClick);
             CancelEditCommand = new RelayCommand(CancelEdit);
