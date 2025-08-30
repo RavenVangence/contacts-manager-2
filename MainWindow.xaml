@@ -48,15 +48,13 @@
         <Border DockPanel.Dock="Top"
                 Background="{StaticResource CardBrush}"
                 BorderBrush="{StaticResource BorderBrushSoft}"
-                BorderThickness="0,0,0,1">
+                BorderThickness="0,0,0,1"
+                Margin="0,8,0,0">
             <Grid Margin="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
                 <TextBlock Text="Contacts"
                            Style="{StaticResource H1}"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
             </Grid>
         </Border>
 
@@ -492,7 +490,7 @@
                                             Value="0"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsEditMode}"
-                                                Value="True">
+                                                     Value="True">
                                             <Setter Property="Visibility"
                                                     Value="Visible"/>
                                             <DataTrigger.EnterActions>
@@ -500,16 +498,16 @@
                                                     <Storyboard>
                                                         <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
                                                                          From="300"
-                                                                To="0"
-                                                                Duration="0:0:0.3">
+                                                                         To="0"
+                                                                         Duration="0:0:0.3">
                                                             <DoubleAnimation.EasingFunction>
                                                                 <CubicEase EasingMode="EaseOut"/>
                                                             </DoubleAnimation.EasingFunction>
                                                         </DoubleAnimation>
                                                         <DoubleAnimation Storyboard.TargetProperty="Opacity"
                                                                          From="0"
-                                                                To="1"
-                                                                Duration="0:0:0.3"/>
+                                                                         To="1"
+                                                                         Duration="0:0:0.3"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </DataTrigger.EnterActions>
@@ -518,16 +516,16 @@
                                                     <Storyboard>
                                                         <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
                                                                          From="0"
-                                                                To="300"
-                                                                Duration="0:0:0.2">
+                                                                         To="300"
+                                                                         Duration="0:0:0.2">
                                                             <DoubleAnimation.EasingFunction>
                                                                 <CubicEase EasingMode="EaseIn"/>
                                                             </DoubleAnimation.EasingFunction>
                                                         </DoubleAnimation>
                                                         <DoubleAnimation Storyboard.TargetProperty="Opacity"
                                                                          From="1"
-                                                                To="0"
-                                                                Duration="0:0:0.2"/>
+                                                                         To="0"
+                                                                         Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </DataTrigger.ExitActions>
