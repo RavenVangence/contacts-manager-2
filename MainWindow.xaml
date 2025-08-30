@@ -13,38 +13,95 @@
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource SurfaceBrush}">
 
+    <Window.Resources>
+        <Style x:Key="NavButton"
+               TargetType="Button">
+            <Setter Property="Foreground"
+                    Value="{StaticResource TextBrush}"/>
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+            <Setter Property="Padding"
+                    Value="16,8"/>
+            <Setter Property="Height"
+                    Value="36"/>
+            <Setter Property="Margin"
+                    Value="0,0,8,0"/>
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+            <Setter Property="Background"
+                    Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Height="{TemplateBinding Height}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                    <Setter Property="Background"
+                            Value="{StaticResource SurfaceBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="HomeNavButton"
+               TargetType="Button"
+               BasedOn="{StaticResource NavButton}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.CurrentPageType, RelativeSource={RelativeSource AncestorType=Window}}"
+                             Value="Home">
+                    <Setter Property="Background"
+                            Value="#0C8900"/>
+                    <Setter Property="Foreground"
+                            Value="White"/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
+                                   Value="True"/>
+                        <Condition Binding="{Binding DataContext.CurrentPageType, RelativeSource={RelativeSource AncestorType=Window}}"
+                                   Value="Home"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background"
+                            Value="#0A7700"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ContactsNavButton"
+               TargetType="Button"
+               BasedOn="{StaticResource NavButton}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.CurrentPageType, RelativeSource={RelativeSource AncestorType=Window}}"
+                             Value="Contacts">
+                    <Setter Property="Background"
+                            Value="#0C8900"/>
+                    <Setter Property="Foreground"
+                            Value="White"/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
+                                   Value="True"/>
+                        <Condition Binding="{Binding DataContext.CurrentPageType, RelativeSource={RelativeSource AncestorType=Window}}"
+                                   Value="Contacts"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background"
+                            Value="#0A7700"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <DockPanel LastChildFill="True">
-        <!-- Menu -->
-        <Menu DockPanel.Dock="Top"
-              Background="{StaticResource CardBrush}">
-            <MenuItem Header="File">
-                <MenuItem Header="Import"
-                          Click="Import_Click"/>
-                <MenuItem Header="Export"
-                          Click="Export_Click"/>
-                <Separator/>
-                <MenuItem Header="Exit"
-                          Click="Exit_Click"/>
-            </MenuItem>
-            <MenuItem Header="Contacts">
-                <MenuItem Header="Open Contacts Manager"
-                          Click="OpenContactsManager_Click"/>
-            </MenuItem>
-            <MenuItem Header="Edit">
-                <MenuItem Header="Add Contact"
-                          Click="AddContact_Click"/>
-                <MenuItem Header="Edit Contact"
-                          Click="EditContact_Click"/>
-                <MenuItem Header="Delete Contact"
-                          Click="DeleteContact_Click"/>
-            </MenuItem>
-            <MenuItem Header="View">
-                <MenuItem Header="Sort by Name"
-                          Click="SortByName_Click"/>
-                <MenuItem Header="Sort by Used Status"
-                          Click="SortByUsed_Click"/>
-            </MenuItem>
-        </Menu>
 
         <!-- Simple Navigation Bar -->
         <Border DockPanel.Dock="Top"
@@ -52,49 +109,9 @@
             <StackPanel Orientation="Horizontal">
                 <!-- Home Navigation Link -->
                 <Button x:Name="HomeNavButton"
-                        Background="Transparent"
-                        Foreground="{StaticResource TextBrush}"
-                        BorderThickness="0"
-                        Padding="16,8"
-                        Height="36"
-                        Margin="0,0,8,0"
+                        Style="{StaticResource HomeNavButton}"
                         ToolTip="Go to Home"
-                        Cursor="Hand"
                         Click="HomeNavButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                                CornerRadius="6"
-                                                Height="{TemplateBinding Height}">
-                                            <ContentPresenter HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"
-                                                              Margin="{TemplateBinding Padding}"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver"
-                                                     Value="True">
-                                                <Setter Property="Background"
-                                                        Value="{StaticResource SurfaceBrush}"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <!-- Show active state when on home view -->
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CurrentPageType}"
-                                             Value="Home">
-                                    <Setter Property="Background"
-                                            Value="{StaticResource PrimaryBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="White"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text="&#xE80F;"
@@ -110,49 +127,9 @@
 
                 <!-- Contacts Navigation Link -->
                 <Button x:Name="ContactsNavButton"
-                        Background="Transparent"
-                        Foreground="{StaticResource TextBrush}"
-                        BorderThickness="0"
-                        Padding="16,8"
-                        Height="36"
-                        Margin="0,0,8,0"
+                        Style="{StaticResource ContactsNavButton}"
                         ToolTip="Go to Contacts"
-                        Cursor="Hand"
                         Click="ContactsNavButton_Click">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                                CornerRadius="6"
-                                                Height="{TemplateBinding Height}">
-                                            <ContentPresenter HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"
-                                                              Margin="{TemplateBinding Padding}"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver"
-                                                     Value="True">
-                                                <Setter Property="Background"
-                                                        Value="{StaticResource SurfaceBrush}"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <!-- Show active state when on contacts view -->
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CurrentPageType}"
-                                             Value="Contacts">
-                                    <Setter Property="Background"
-                                            Value="{StaticResource PrimaryBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="White"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text="&#xE77B;"

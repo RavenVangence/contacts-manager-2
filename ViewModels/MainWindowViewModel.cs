@@ -41,11 +41,13 @@ namespace ContactsManager.ViewModels
         public void NavigateToContacts()
         {
             CurrentPageType = "Contacts";
+            System.Diagnostics.Debug.WriteLine($"NavigateToContacts: CurrentPageType = {CurrentPageType}");
         }
 
         public void NavigateToHome()
         {
             CurrentPageType = "Home";
+            System.Diagnostics.Debug.WriteLine($"NavigateToHome: CurrentPageType = {CurrentPageType}");
         }
 
         public bool CanClose()
