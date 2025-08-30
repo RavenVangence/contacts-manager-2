@@ -6,43 +6,52 @@ namespace ContactsManager.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private bool _isContactsViewActive = false;
+        private string _currentPageType = "Home";
+        private MainViewModel? _contactsViewModel;
 
-        public MainViewModel ContactsViewModel { get; }
-
-        public bool IsContactsViewActive
+        public string CurrentPageType
         {
-            get => _isContactsViewActive;
+            get => _currentPageType;
             set
             {
-                if (_isContactsViewActive != value)
+                if (_currentPageType != value)
                 {
-                    _isContactsViewActive = value;
+                    _currentPageType = value;
                     OnPropertyChanged();
                 }
             }
         }
 
+        public MainViewModel? ContactsViewModel
+        {
+            get => _contactsViewModel;
+            set
+            {
+                _contactsViewModel = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel()
         {
-            ContactsViewModel = new MainViewModel();
-            // Ensure we always start with Home page
-            _isContactsViewActive = false;
+            // Start with Home page - don't initialize ContactsViewModel until needed
+            CurrentPageType = "Home";
         }
 
         public void NavigateToContacts()
         {
-            IsContactsViewActive = true;
+            CurrentPageType = "Contacts";
         }
 
         public void NavigateToHome()
         {
-            IsContactsViewActive = false;
+            CurrentPageType = "Home";
         }
 
         public bool CanClose()
         {
-            return ContactsViewModel.CanClose();
+            // Only check ContactsViewModel if it exists
+            return ContactsViewModel?.CanClose() ?? true;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

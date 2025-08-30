@@ -19,9 +19,9 @@
               Background="{StaticResource CardBrush}">
             <MenuItem Header="File">
                 <MenuItem Header="Import"
-                          Command="{Binding ContactsViewModel.ImportCommand}"/>
+                          Click="Import_Click"/>
                 <MenuItem Header="Export"
-                          Command="{Binding ContactsViewModel.ExportCommand}"/>
+                          Click="Export_Click"/>
                 <Separator/>
                 <MenuItem Header="Exit"
                           Click="Exit_Click"/>
@@ -32,17 +32,17 @@
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Add Contact"
-                          Command="{Binding ContactsViewModel.AddCommand}"/>
+                          Click="AddContact_Click"/>
                 <MenuItem Header="Edit Contact"
-                          Command="{Binding ContactsViewModel.EditCommand}"/>
+                          Click="EditContact_Click"/>
                 <MenuItem Header="Delete Contact"
-                          Command="{Binding ContactsViewModel.DeleteCommand}"/>
+                          Click="DeleteContact_Click"/>
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem Header="Sort by Name"
-                          Command="{Binding ContactsViewModel.SortByNameCommand}"/>
+                          Click="SortByName_Click"/>
                 <MenuItem Header="Sort by Used Status"
-                          Command="{Binding ContactsViewModel.SortByUsedCommand}"/>
+                          Click="SortByUsed_Click"/>
             </MenuItem>
         </Menu>
 
@@ -85,8 +85,8 @@
                             </Setter>
                             <!-- Show active state when on home view -->
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsContactsViewActive}"
-                                             Value="False">
+                                <DataTrigger Binding="{Binding CurrentPageType}"
+                                             Value="Home">
                                     <Setter Property="Background"
                                             Value="{StaticResource PrimaryBrush}"/>
                                     <Setter Property="Foreground"
@@ -143,8 +143,8 @@
                             </Setter>
                             <!-- Show active state when on contacts view -->
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsContactsViewActive}"
-                                             Value="True">
+                                <DataTrigger Binding="{Binding CurrentPageType}"
+                                             Value="Contacts">
                                     <Setter Property="Background"
                                             Value="{StaticResource PrimaryBrush}"/>
                                     <Setter Property="Foreground"
@@ -168,52 +168,9 @@
             </StackPanel>
         </Border>
 
-        <!-- Content Area -->
-        <Grid Margin="16">
-            <!-- Welcome Screen (when contacts view is not active) -->
-            <Grid Visibility="{Binding IsContactsViewActive, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                <Border Style="{StaticResource Card}"
-                        MaxWidth="600"
-                        MaxHeight="400"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                    <StackPanel HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Margin="40">
-                        <TextBlock Text="📋"
-                                   FontSize="64"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,24"/>
-                        <TextBlock Text="Welcome to Contacts Manager"
-                                   Style="{StaticResource H1}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,16"/>
-                        <TextBlock Text="Click the Contacts button above to manage your contacts"
-                                   Style="{StaticResource Body}"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,24"/>
-                        <Button Style="{StaticResource PrimaryButton}"
-                                Click="ContactsNavButton_Click"
-                                MinWidth="200"
-                                HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text="&#xE77B;"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,8,0"/>
-                                <TextBlock Text="Go to Contacts"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Border>
-            </Grid>
-
-            <!-- Contacts View (when active) -->
-            <views:ContactsView x:Name="ContactsView"
-                                DataContext="{Binding ContactsViewModel}"
-                                Visibility="{Binding IsContactsViewActive, Converter={StaticResource BoolToVisibilityConverter}}"/>
-        </Grid>
+        <!-- Content Area with Frame -->
+        <Frame x:Name="MainFrame"
+               NavigationUIVisibility="Hidden"
+               Margin="16"/>
     </DockPanel>
 </Window>
