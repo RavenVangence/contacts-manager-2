@@ -62,516 +62,605 @@
 
         <!-- Content -->
         <Grid Margin="16">
-            <Grid.ColumnDefinitions>
-                <!-- When not editing: left list spans full width (2*), right collapsed (0). When editing: left 2*, right * (i.e., right ~1/3). -->
-                <ColumnDefinition Width="{Binding IsEditMode, Converter={StaticResource BoolToGridLengthConverter}, ConverterParameter='2*;2*'}"/>
-                <ColumnDefinition Width="16"/>
-                <ColumnDefinition Width="{Binding IsEditMode, Converter={StaticResource BoolToGridLengthConverter}, ConverterParameter='*;0'}"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Left: list -->
-            <Border Style="{StaticResource Card}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <DockPanel LastChildFill="True">
-                        <!-- Top toolbar with Import/Add on left, Export/Save on right -->
-                        <Grid DockPanel.Dock="Top"
-                              Margin="0,0,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Left side: Import and Add buttons -->
-                            <StackPanel Grid.Column="0"
-                                        Orientation="Horizontal">
-                                <Button Style="{StaticResource GhostButton}"
-                                        Command="{Binding ImportCommand}"
-                                        ToolTip="Import contacts from an Excel file">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text="&#xE896;"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,6,0"/>
-                                        <TextBlock Text="Import Data"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Style="{StaticResource GhostButton}"
-                                        Command="{Binding AddCommand}"
-                                        ToolTip="Add a new contact">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text="&#xE710;"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,6,0"/>
-                                        <TextBlock Text="Add Contact"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-
-                            <!-- Right side: Export and Save buttons -->
-                            <StackPanel Grid.Column="1"
-                                        Orientation="Horizontal"
-                                        Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Button Style="{StaticResource GhostButton}"
-                                        Command="{Binding ExportCommand}"
-                                        ToolTip="Export contacts to an Excel file">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text="&#xE74C;"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,6,0"/>
-                                        <TextBlock Text="Export Data"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Style="{StaticResource PrimaryButton}"
-                                        Command="{Binding SaveCommand}"
-                                        ToolTip="Save changes to the current contact"
-                                        MinWidth="160">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text="&#xE74E;"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,6,0"/>
-                                        <TextBlock Text="Save"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-
-                        <!-- Horizontal separator -->
-                        <Border DockPanel.Dock="Top"
-                                Height="1"
-                                Background="{StaticResource BorderBrushSoft}"
-                                Margin="0,8,0,16"
-                                Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}"/>
-
-                        <!-- Search and Sort on same line -->
-                        <Grid DockPanel.Dock="Top"
-                              Margin="0,0,0,12"
-                              Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <!-- All controls on the left side -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-                                <TextBlock Text="Sort by:"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,8,0"
-                                           Style="{StaticResource Body}"/>
-                                <Button Content="Name"
-                                        Style="{StaticResource SortButton}"
-                                        Command="{Binding SortByNameCommand}"/>
-                                <Button Content="Surname"
-                                        Style="{StaticResource SortButton}"
-                                        Command="{Binding SortBySurnameCommand}"/>
-                                <Button Content="Used"
-                                        Style="{StaticResource SortButton}"
-                                        Command="{Binding SortByUsedCommand}"
-                                        Margin="0,0,16,0"/>
-
-                                <!-- Search box next to sort buttons -->
-                                <Grid Width="250"
-                                      Height="30">
-                                    <TextBox x:Name="SearchBox"
-                                             Style="{StaticResource SearchTextBox}"
-                                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <TextBlock Text="Search contacts..."
-                                               Margin="10,0,0,0"
-                                               VerticalAlignment="Center"
-                                               FontSize="13"
-                                               Foreground="{StaticResource SubtleTextBrush}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility"
-                                                        Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding Text.Length, ElementName=SearchBox}"
-                                                                       Value="0"/>
-                                                            <Condition Binding="{Binding IsFocused, ElementName=SearchBox}"
-                                                                       Value="False"/>
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility"
-                                                                Value="Visible"/>
-                                                    </MultiDataTrigger>
-                                                    <Trigger Property="Visibility"
-                                                             Value="Visible">
-                                                        <Setter Property="IsHitTestVisible"
-                                                                Value="False"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-
-                                <!-- Statistics -->
-                                <StackPanel Orientation="Horizontal"
-                                            Margin="20,0,0,0"
-                                            VerticalAlignment="Center">
-                                    <TextBlock Text="Total: "
-                                               FontSize="12"
-                                               Foreground="{StaticResource SubtleTextBrush}"
-                                               VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding TotalContacts}"
-                                               FontSize="12"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextBrush}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,12,0"/>
-
-                                    <TextBlock Text="Used: "
-                                               FontSize="12"
-                                               Foreground="{StaticResource SubtleTextBrush}"
-                                               VerticalAlignment="Center"/>
-                                    <Border Background="#F5E8E8"
-                                            CornerRadius="3"
-                                            Padding="4,2">
-                                        <TextBlock Text="{Binding TotalUsed}"
-                                                   FontSize="12"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#B83C3C"
-                                                   VerticalAlignment="Center"/>
-                                    </Border>
-
-                                    <TextBlock Text="Unused: "
-                                               FontSize="12"
-                                               Foreground="{StaticResource SubtleTextBrush}"
-                                               VerticalAlignment="Center"
-                                               Margin="12,0,0,0"/>
-                                    <Border Background="#E8F5E8"
-                                            CornerRadius="3"
-                                            Padding="4,2">
-                                        <TextBlock Text="{Binding TotalUnused}"
-                                                   FontSize="12"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#2D7A2D"
-                                                   VerticalAlignment="Center"/>
-                                    </Border>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </DockPanel>
-
-                    <ScrollViewer x:Name="MainScrollViewer"
-                                  Grid.Row="1"
-                                  VerticalScrollBarVisibility="Auto"
-                                  Margin="0,0,8,0"
-                                  CanContentScroll="False">
-                        <ScrollViewer.Resources>
-                            <Style TargetType="ScrollBar">
-                                <Setter Property="Width"
-                                        Value="8"/>
-                            </Style>
-                        </ScrollViewer.Resources>
-                        <StackPanel>
-                            <!-- No data message -->
-                            <Grid Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                                <TextBlock Text="No contacts available. Add a contact or import data to get started."
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           TextAlignment="Center"
-                                           Foreground="{StaticResource SubtleTextBrush}"
-                                           FontSize="16"
-                                           Margin="20,40"/>
-                            </Grid>
-
-                            <!-- Table Header -->
-                            <Grid Background="{StaticResource BorderBrushSoft}"
-                                  Margin="0,0,0,1"
-                                  Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="80"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0"
-                                           Text="Name"
-                                           FontWeight="Bold"
-                                           Padding="12,16"
-                                           Foreground="{StaticResource TextBrush}"/>
-                                <TextBlock Grid.Column="1"
-                                           Text="Surname"
-                                           FontWeight="Bold"
-                                           Padding="12,16"
-                                           Foreground="{StaticResource TextBrush}"/>
-                                <TextBlock Grid.Column="2"
-                                           Text="Phone Number"
-                                           FontWeight="Bold"
-                                           Padding="12,16"
-                                           Foreground="{StaticResource TextBrush}"/>
-                                <TextBlock Grid.Column="3"
-                                           Text="Used"
-                                           FontWeight="Bold"
-                                           Padding="12,16"
-                                           Foreground="{StaticResource TextBrush}"/>
-                                <TextBlock Grid.Column="4"
-                                           Text="Actions"
-                                           FontWeight="Bold"
-                                           Padding="12,16"
-                                           Foreground="{StaticResource TextBrush}"/>
-                            </Grid>
-
-                            <!-- Table Data -->
-                            <ListBox ItemsSource="{Binding ContactsView}"
-                                     SelectedItem="{Binding SelectedContact}"
-                                     BorderThickness="0"
-                                     ItemContainerStyle="{StaticResource ContactListItem}"
-                                     Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}"
-                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                     ScrollViewer.CanContentScroll="False"
-                                     Background="Transparent">
-                                <ListBox.InputBindings>
-                                    <MouseBinding Gesture="LeftDoubleClick"
-                                                  Command="{Binding ContactDoubleClickCommand}"/>
-                                </ListBox.InputBindings>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="{Binding Used, Converter={StaticResource BoolToColorConverter}}"
-                                                Padding="4,8"
-                                                Margin="0,1,0,0">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="200"/>
-                                                    <ColumnDefinition Width="200"/>
-                                                    <ColumnDefinition Width="150"/>
-                                                    <ColumnDefinition Width="80"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Grid.Column="0"
-                                                           Text="{Binding FirstName}"
-                                                           FontWeight="SemiBold"
-                                                           Padding="12,4"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{StaticResource TextBrush}"/>
-
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding LastName}"
-                                                           FontWeight="SemiBold"
-                                                           Padding="12,4"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{StaticResource TextBrush}"/>
-
-                                                <TextBlock Grid.Column="2"
-                                                           Text="{Binding Phone}"
-                                                           Padding="12,4"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{StaticResource TextBrush}"/>
-
-                                                <TextBlock Grid.Column="3"
-                                                           Text="{Binding Used, Converter={StaticResource BoolToIntConverter}}"
-                                                           Padding="12,4"
-                                                           VerticalAlignment="Center"
-                                                           HorizontalAlignment="Center"
-                                                           Foreground="{StaticResource TextBrush}"/>
-
-                                                <StackPanel Grid.Column="4"
-                                                            Orientation="Horizontal"
-                                                            VerticalAlignment="Center"
-                                                            Margin="12,4">
-                                                    <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                            CommandParameter="{Binding}"
-                                                            Style="{StaticResource EditButton}"
-                                                            Margin="0,0,4,0"
-                                                            ToolTip="Edit this contact">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                                       Text="&#xE70F;"
-                                                                       VerticalAlignment="Center"
-                                                                       Margin="0,0,4,0"/>
-                                                            <TextBlock Text="Edit"
-                                                                       VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                    <Button Command="{Binding DataContext.ToggleUsedCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                            CommandParameter="{Binding}"
-                                                            Style="{StaticResource ToggleButton}"
-                                                            Margin="0,0,4,0"
-                                                            ToolTip="Toggle used status">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                                       Text="&#xE7FC;"
-                                                                       VerticalAlignment="Center"
-                                                                       Margin="0,0,4,0"/>
-                                                            <TextBlock Text="Toggle Used"
-                                                                       VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                    <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                            CommandParameter="{Binding}"
-                                                            Style="{StaticResource DeleteButton}"
-                                                            ToolTip="Delete this contact">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                                       Text="&#xE74D;"
-                                                                       VerticalAlignment="Center"
-                                                                       Margin="0,0,4,0"/>
-                                                            <TextBlock Text="Delete"
-                                                                       VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
-
-            <!-- Right: details / edit panel -->
-            <Border Grid.Column="2"
-                    Style="{StaticResource Card}">
-                <Grid>
-                    <!-- Placeholder shown when not in edit mode -->
-                    <Grid Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                        <TextBlock Text="Double-click a contact to edit or click Add to create a new contact"
+            <!-- Loading Overlay -->
+            <Grid Visibility="{Binding ShowLoadingMessage, Converter={StaticResource BoolToVisibilityConverter}}"
+                  Background="{StaticResource CardBrush}"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  MinWidth="300"
+                  MinHeight="150">
+                <Border Style="{StaticResource Card}"
+                        Background="{StaticResource CardBrush}">
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="40">
+                        <TextBlock Text="📊"
+                                   FontSize="48"
                                    HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   TextWrapping="Wrap"
-                                   TextAlignment="Center"
-                                   Foreground="{StaticResource SubtleTextBrush}"
-                                   FontSize="16"/>
-                    </Grid>
+                                   Margin="0,0,0,16"/>
+                        <TextBlock Text="Loading contacts..."
+                                   Style="{StaticResource H2}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Please wait while we load your data"
+                                   Style="{StaticResource Body}"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
-                    <!-- Edit form shown only in edit mode -->
-                    <Grid Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Main Content -->
+            <Grid Visibility="{Binding ShowMainContent, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <!-- When not editing: left list spans full width (2*), right collapsed (0). When editing: left 2*, right * (i.e., right ~1/3). -->
+                    <ColumnDefinition Width="{Binding IsEditMode, Converter={StaticResource BoolToGridLengthConverter}, ConverterParameter='2*;2*'}"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="{Binding IsEditMode, Converter={StaticResource BoolToGridLengthConverter}, ConverterParameter='*;0'}"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: list -->
+                <Border Style="{StaticResource Card}">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Header with avatar, name -->
-                        <Grid Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <Border Style="{StaticResource AvatarCircle}"
-                                        Width="56"
-                                        Height="56"
-                                        CornerRadius="28">
-                                    <TextBlock Text="{Binding SelectedContact.FullName, Converter={StaticResource InitialsConverter}}"
-                                               Foreground="White"
-                                               FontSize="18"
-                                               FontWeight="Bold"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Margin="12,0,0,0"
-                                            VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding SelectedContact.FullName}"
-                                               Style="{StaticResource H2}"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
+                        <DockPanel LastChildFill="True">
+                            <!-- Top toolbar with Import/Add on left, Export/Save on right -->
+                            <Grid DockPanel.Dock="Top"
+                                  Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                        <!-- Edit fields -->
-                        <StackPanel Grid.Row="1"
-                                    Margin="0,4,0,0">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <Grid Margin="0,6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="First name"
-                                               VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1"
-                                             Text="{Binding SelectedContact.FirstName, UpdateSourceTrigger=PropertyChanged}"/>
-                                </Grid>
-
-                                <Grid Margin="0,6"
-                                      Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Last name"
-                                               VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1"
-                                             Text="{Binding SelectedContact.LastName, UpdateSourceTrigger=PropertyChanged}"/>
-                                </Grid>
-
-                                <Grid Margin="0,6"
-                                      Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Phone"
-                                               VerticalAlignment="Center"/>
-                                    <TextBox Grid.Column="1"
-                                             Text="{Binding SelectedContact.Phone, UpdateSourceTrigger=PropertyChanged}"/>
-                                </Grid>
-
-                                <Grid Margin="0,6"
-                                      Grid.Row="3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Used Status"
-                                               VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Column="1"
-                                              IsChecked="{Binding SelectedContact.Used}"
-                                              VerticalAlignment="Center"/>
-                                </Grid>
-
-                                <StackPanel Grid.Row="4"
-                                            Orientation="Horizontal"
-                                            HorizontalAlignment="Right"
-                                            Margin="0,16,0,0">
-                                    <Button Style="{StaticResource PrimaryButton}"
-                                            Command="{Binding SaveCommand}"
-                                            ToolTip="Save changes to the database"
-                                            MinWidth="160">
+                                <!-- Left side: Import and Add buttons -->
+                                <StackPanel Grid.Column="0"
+                                            Orientation="Horizontal">
+                                    <Button Style="{StaticResource GhostButton}"
+                                            Command="{Binding ImportCommand}"
+                                            ToolTip="Import contacts from an Excel file">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                       Text="&#xE74E;"
+                                                       Text="&#xE896;"
                                                        VerticalAlignment="Center"
                                                        Margin="0,0,6,0"/>
-                                            <TextBlock Text="Save"/>
+                                            <TextBlock Text="Import Data"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Style="{StaticResource GhostButton}"
-                                            Command="{Binding CancelEditCommand}"
-                                            ToolTip="Cancel changes and exit edit mode">
+                                            Command="{Binding AddCommand}"
+                                            ToolTip="Add a new contact">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                       Text="&#xE711;"
+                                                       Text="&#xE710;"
                                                        VerticalAlignment="Center"
                                                        Margin="0,0,6,0"/>
-                                            <TextBlock Text="Cancel"/>
+                                            <TextBlock Text="Add Contact"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Right side: Export, Save and Persist buttons -->
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Button Style="{StaticResource GhostButton}"
+                                            Command="{Binding ExportCommand}"
+                                            ToolTip="Export contacts to an Excel file">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                       Text="&#xE74C;"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,6,0"/>
+                                            <TextBlock Text="Export Data"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button Style="{StaticResource SuccessButton}"
+                                            Command="{Binding PersistChangesCommand}"
+                                            ToolTip="Save all changes to the database file (sa_contacts.xlsx)"
+                                            MinWidth="140"
+                                            Margin="8,0,0,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                       Text="&#xE792;"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,6,0"/>
+                                            <TextBlock Text="Persist Changes"/>
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
                             </Grid>
-                        </StackPanel>
+
+                            <!-- Horizontal separator -->
+                            <Border DockPanel.Dock="Top"
+                                    Height="1"
+                                    Background="{StaticResource BorderBrushSoft}"
+                                    Margin="0,8,0,16"
+                                    Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                            <!-- Search and Sort on same line -->
+                            <Grid DockPanel.Dock="Top"
+                                  Margin="0,0,0,12"
+                                  Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <!-- All controls on the left side -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="Sort by:"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0"
+                                               Style="{StaticResource Body}"/>
+                                    <Button Content="Name"
+                                            Style="{StaticResource SortButton}"
+                                            Command="{Binding SortByNameCommand}"/>
+                                    <Button Content="Surname"
+                                            Style="{StaticResource SortButton}"
+                                            Command="{Binding SortBySurnameCommand}"/>
+                                    <Button Content="Used"
+                                            Style="{StaticResource SortButton}"
+                                            Command="{Binding SortByUsedCommand}"
+                                            Margin="0,0,16,0"/>
+
+                                    <!-- Search box next to sort buttons -->
+                                    <Grid Width="250"
+                                          Height="30">
+                                        <TextBox x:Name="SearchBox"
+                                                 Style="{StaticResource SearchTextBox}"
+                                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBlock Text="Search contacts..."
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="13"
+                                                   Foreground="{StaticResource SubtleTextBrush}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding Text.Length, ElementName=SearchBox}"
+                                                                           Value="0"/>
+                                                                <Condition Binding="{Binding IsFocused, ElementName=SearchBox}"
+                                                                           Value="False"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                        <Trigger Property="Visibility"
+                                                                 Value="Visible">
+                                                            <Setter Property="IsHitTestVisible"
+                                                                    Value="False"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+
+                                    <!-- Statistics -->
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="20,0,0,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="Total: "
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource SubtleTextBrush}"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding TotalContacts}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,12,0"/>
+
+                                        <TextBlock Text="Used: "
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource SubtleTextBrush}"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="#F5E8E8"
+                                                CornerRadius="3"
+                                                Padding="4,2">
+                                            <TextBlock Text="{Binding TotalUsed}"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#B83C3C"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <TextBlock Text="Unused: "
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource SubtleTextBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="12,0,0,0"/>
+                                        <Border Background="#E8F5E8"
+                                                CornerRadius="3"
+                                                Padding="4,2">
+                                            <TextBlock Text="{Binding TotalUnused}"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#2D7A2D"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </DockPanel>
+
+                        <ScrollViewer x:Name="MainScrollViewer"
+                                      Grid.Row="1"
+                                      VerticalScrollBarVisibility="Auto"
+                                      Margin="0,0,8,0"
+                                      CanContentScroll="False">
+                            <ScrollViewer.Resources>
+                                <Style TargetType="ScrollBar">
+                                    <Setter Property="Width"
+                                            Value="8"/>
+                                </Style>
+                            </ScrollViewer.Resources>
+                            <StackPanel>
+                                <!-- No data message -->
+                                <Grid Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                                    <TextBlock Text="No contacts available. Add a contact or import data to get started."
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               Foreground="{StaticResource SubtleTextBrush}"
+                                               FontSize="16"
+                                               Margin="20,40"/>
+                                </Grid>
+
+                                <!-- Table Header -->
+                                <Grid Background="{StaticResource BorderBrushSoft}"
+                                      Margin="0,0,0,1"
+                                      Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="Name"
+                                               FontWeight="Bold"
+                                               Padding="12,16"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock Grid.Column="1"
+                                               Text="Surname"
+                                               FontWeight="Bold"
+                                               Padding="12,16"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock Grid.Column="2"
+                                               Text="Phone Number"
+                                               FontWeight="Bold"
+                                               Padding="12,16"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock Grid.Column="3"
+                                               Text="Used"
+                                               FontWeight="Bold"
+                                               Padding="12,16"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock Grid.Column="4"
+                                               Text="Actions"
+                                               FontWeight="Bold"
+                                               Padding="12,16"
+                                               Foreground="{StaticResource TextBrush}"/>
+                                </Grid>
+
+                                <!-- Table Data -->
+                                <ListBox ItemsSource="{Binding ContactsView}"
+                                         SelectedItem="{Binding SelectedContact}"
+                                         BorderThickness="0"
+                                         ItemContainerStyle="{StaticResource ContactListItem}"
+                                         Visibility="{Binding HasContacts, Converter={StaticResource BoolToVisibilityConverter}}"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         ScrollViewer.CanContentScroll="False"
+                                         Background="Transparent"
+                                         PreviewMouseWheel="ListBox_PreviewMouseWheel">
+                                    <ListBox.InputBindings>
+                                        <MouseBinding Gesture="LeftDoubleClick"
+                                                      Command="{Binding ContactDoubleClickCommand}"/>
+                                    </ListBox.InputBindings>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding Used, Converter={StaticResource BoolToColorConverter}}"
+                                                    Padding="4,8"
+                                                    Margin="0,1,0,0">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="200"/>
+                                                        <ColumnDefinition Width="200"/>
+                                                        <ColumnDefinition Width="150"/>
+                                                        <ColumnDefinition Width="80"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding FirstName}"
+                                                               FontWeight="SemiBold"
+                                                               Padding="12,4"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{StaticResource TextBrush}"/>
+
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding LastName}"
+                                                               FontWeight="SemiBold"
+                                                               Padding="12,4"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{StaticResource TextBrush}"/>
+
+                                                    <TextBlock Grid.Column="2"
+                                                               Text="{Binding Phone}"
+                                                               Padding="12,4"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{StaticResource TextBrush}"/>
+
+                                                    <TextBlock Grid.Column="3"
+                                                               Text="{Binding Used, Converter={StaticResource BoolToIntConverter}}"
+                                                               Padding="12,4"
+                                                               VerticalAlignment="Center"
+                                                               HorizontalAlignment="Center"
+                                                               Foreground="{StaticResource TextBrush}"/>
+
+                                                    <StackPanel Grid.Column="4"
+                                                                Orientation="Horizontal"
+                                                                VerticalAlignment="Center"
+                                                                Margin="12,4">
+                                                        <Button Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                                CommandParameter="{Binding}"
+                                                                Style="{StaticResource EditButton}"
+                                                                Margin="0,0,4,0"
+                                                                ToolTip="Edit this contact">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                                           Text="&#xE70F;"
+                                                                           VerticalAlignment="Center"
+                                                                           Margin="0,0,4,0"/>
+                                                                <TextBlock Text="Edit"
+                                                                           VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Command="{Binding DataContext.ToggleUsedCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                                CommandParameter="{Binding}"
+                                                                Style="{StaticResource ToggleButton}"
+                                                                Margin="0,0,4,0"
+                                                                ToolTip="Toggle used status">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                                           Text="&#xE7FC;"
+                                                                           VerticalAlignment="Center"
+                                                                           Margin="0,0,4,0"/>
+                                                                <TextBlock Text="Toggle Used"
+                                                                           VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                                CommandParameter="{Binding}"
+                                                                Style="{StaticResource DeleteButton}"
+                                                                ToolTip="Delete this contact">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                                           Text="&#xE74D;"
+                                                                           VerticalAlignment="Center"
+                                                                           Margin="0,0,4,0"/>
+                                                                <TextBlock Text="Delete"
+                                                                           VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </ScrollViewer>
                     </Grid>
-                </Grid>
-            </Border>
+                </Border>
+
+                <!-- Right: details / edit panel -->
+                <Border Grid.Column="2"
+                        Style="{StaticResource Card}">
+                    <Grid>
+                        <!-- Placeholder shown when not in edit mode -->
+                        <Grid Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                            <TextBlock Text="Double-click a contact to edit or click Add to create a new contact"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       Foreground="{StaticResource SubtleTextBrush}"
+                                       FontSize="16"/>
+                        </Grid>
+
+                        <!-- Edit form shown only in edit mode -->
+                        <Grid x:Name="EditPanel">
+                            <Grid.RenderTransform>
+                                <TranslateTransform/>
+                            </Grid.RenderTransform>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed"/>
+                                    <Setter Property="Opacity"
+                                            Value="0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEditMode}"
+                                                Value="True">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible"/>
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                         From="300"
+                                                                To="0"
+                                                                Duration="0:0:0.3">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseOut"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                         From="0"
+                                                                To="1"
+                                                                Duration="0:0:0.3"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                         From="0"
+                                                                To="300"
+                                                                Duration="0:0:0.2">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <CubicEase EasingMode="EaseIn"/>
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                         From="1"
+                                                                To="0"
+                                                                Duration="0:0:0.2"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Header with avatar, name -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource AvatarCircle}"
+                                            Width="56"
+                                            Height="56"
+                                            CornerRadius="28">
+                                        <TextBlock Text="{Binding SelectedContact.FullName, Converter={StaticResource InitialsConverter}}"
+                                                   Foreground="White"
+                                                   FontSize="18"
+                                                   FontWeight="Bold"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Margin="12,0,0,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SelectedContact.FullName}"
+                                                   Style="{StaticResource H2}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Edit fields -->
+                            <StackPanel Grid.Row="1"
+                                        Margin="0,4,0,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Margin="0,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="First name"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding SelectedContact.FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,6"
+                                          Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Last name"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding SelectedContact.LastName, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,6"
+                                          Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Phone"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding SelectedContact.Phone, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,6"
+                                          Grid.Row="3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Used Status"
+                                                   VerticalAlignment="Center"/>
+                                        <CheckBox Grid.Column="1"
+                                                  IsChecked="{Binding SelectedContact.Used}"
+                                                  VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <StackPanel Grid.Row="4"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="0,16,0,0">
+                                        <Button Style="{StaticResource PrimaryButton}"
+                                                Command="{Binding SaveCommand}"
+                                                ToolTip="Save changes to the current contact (memory only)"
+                                                MinWidth="160">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                           Text="&#xE74E;"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,6,0"/>
+                                                <TextBlock Text="Save"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource GhostButton}"
+                                                Command="{Binding CancelEditCommand}"
+                                                ToolTip="Cancel changes and exit edit mode">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                           Text="&#xE711;"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,6,0"/>
+                                                <TextBlock Text="Cancel"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+            <!-- End Main Content Grid -->
         </Grid>
     </DockPanel>
 </Window>

@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.ComponentModel;
 
 namespace ContactsManager
 {
@@ -12,6 +14,10 @@ namespace ContactsManager
         public MainWindow()
         {
             InitializeComponent();
+
+            // Handle window closing event
+            Closing += MainWindow_Closing;
+
             Loaded += (_, __) =>
             {
                 if (DataContext is ViewModels.MainViewModel vm)
@@ -27,9 +33,34 @@ namespace ContactsManager
             };
         }
 
+        private void MainWindow_Closing(object? sender, CancelEventArgs e)
+        {
+            if (DataContext is ViewModels.MainViewModel vm)
+            {
+                if (!vm.CanClose())
+                {
+                    e.Cancel = true; // Cancel the closing
+                }
+            }
+        }
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void ListBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // Prevent ListBox from handling mouse wheel events
+            e.Handled = true;
+
+            // Redirect mouse wheel events to the parent ScrollViewer
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            {
+                RoutedEvent = UIElement.MouseWheelEvent,
+                Source = sender
+            };
+            MainScrollViewer.RaiseEvent(eventArg);
         }
     }
 }
