@@ -31,6 +31,10 @@ namespace ContactsManager.ViewModels
 
         public bool HasContacts => Contacts.Any();
 
+        public int TotalContacts => Contacts.Count;
+        public int TotalUsed => Contacts.Count(c => c.Used);
+        public int TotalUnused => Contacts.Count(c => !c.Used);
+
         public string SearchText
         {
             get => _searchText;
@@ -119,6 +123,7 @@ namespace ContactsManager.ViewModels
             var newContact = new Contact();
             Contacts.Insert(0, newContact);
             OnPropertyChanged(nameof(HasContacts));
+            UpdateStatistics();
             SelectedContact = newContact;
             IsEditMode = true;
         }
@@ -144,6 +149,7 @@ namespace ContactsManager.ViewModels
             }
 
             OnPropertyChanged(nameof(HasContacts));
+            UpdateStatistics();
 
             // Compensate for unwanted scroll behavior
             if (ScrollViewer != null)
@@ -161,7 +167,15 @@ namespace ContactsManager.ViewModels
         {
             if (contact is null) return;
             contact.Used = !contact.Used;
+            UpdateStatistics();
             // No need to refresh the entire view, binding will handle the update
+        }
+
+        private void UpdateStatistics()
+        {
+            OnPropertyChanged(nameof(TotalContacts));
+            OnPropertyChanged(nameof(TotalUsed));
+            OnPropertyChanged(nameof(TotalUnused));
         }
 
         private void SaveSelected()
@@ -226,6 +240,7 @@ namespace ContactsManager.ViewModels
 
                     ContactsView.Refresh();
                     OnPropertyChanged(nameof(HasContacts));
+                    UpdateStatistics();
                     MessageBox.Show($"Successfully imported {rows.Count()} contacts.", "Import Complete",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -329,6 +344,7 @@ namespace ContactsManager.ViewModels
                 {
                     Contacts.Remove(SelectedContact);
                     OnPropertyChanged(nameof(HasContacts));
+                    UpdateStatistics();
                 }
                 else // Existing contact was being edited
                 {
