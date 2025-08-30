@@ -1,11 +1,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using Microsoft.Win32;
+using ClosedXML.Excel;
 using ContactsManager.Infrastructure;
 using ContactsManager.Models;
 using ContactsManager.Views;
@@ -18,6 +21,8 @@ namespace ContactsManager.ViewModels
         private string _searchText = string.Empty;
         private string _currentSortProperty = nameof(Contact.LastName);
         private ListSortDirection _currentSortDirection = ListSortDirection.Ascending;
+        private bool _isEditMode = false;
+        private Contact? _contactBeforeEdit;
 
         public ObservableCollection<Contact> Contacts { get; } = new();
         public ICollectionView ContactsView { get; }
@@ -42,6 +47,19 @@ namespace ContactsManager.ViewModels
             set { if (_selectedContact != value) { _selectedContact = value; OnPropertyChanged(); } }
         }
 
+        public bool IsEditMode
+        {
+            get => _isEditMode;
+            set
+            {
+                if (_isEditMode != value)
+                {
+                    _isEditMode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand SaveCommand { get; }
@@ -49,33 +67,26 @@ namespace ContactsManager.ViewModels
         public ICommand ExportCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand SortByNameCommand { get; }
-        public ICommand SortByEmailCommand { get; }
-        public ICommand SortByCompanyCommand { get; }
         public ICommand SortByUsedCommand { get; }
-        public ICommand SortByDateCommand { get; }
+        public ICommand ContactDoubleClickCommand { get; }
+        public ICommand CancelEditCommand { get; }
 
         public MainViewModel()
         {
-            // Sample data with Used property
-            Contacts.Add(new Contact { FirstName = "Ava", LastName = "Johnson", Email = "ava@example.com", Phone = "+1 (555) 010-1234", Company = "Northwind", Notes = "Key stakeholder", Used = true });
-            Contacts.Add(new Contact { FirstName = "Ben", LastName = "Kim", Email = "ben.kim@example.com", Phone = "+1 (555) 010-5678", Company = "Adventure Works", Used = false });
-            Contacts.Add(new Contact { FirstName = "Carla", LastName = "Nguyen", Email = "carla.n@example.com", Phone = "+1 (555) 010-9999", Company = "Fabrikam", Notes = "Prefers email", Used = true });
-
             ContactsView = CollectionViewSource.GetDefaultView(Contacts);
             ContactsView.SortDescriptions.Add(new SortDescription(_currentSortProperty, _currentSortDirection));
             ContactsView.Filter = FilterContact;
 
             AddCommand = new RelayCommand(AddContact);
-            DeleteCommand = new RelayCommand(_ => DeleteSelected(), _ => SelectedContact != null);
+            DeleteCommand = new RelayCommand(param => DeleteSelected(param as Contact), _ => true);
             SaveCommand = new RelayCommand(_ => SaveSelected(), _ => SelectedContact != null);
             ImportCommand = new RelayCommand(ImportContacts);
             ExportCommand = new RelayCommand(ExportContacts);
-            EditCommand = new RelayCommand(_ => EditSelected(), _ => SelectedContact != null);
-            SortByNameCommand = new RelayCommand(() => SortBy(nameof(Contact.LastName)));
-            SortByEmailCommand = new RelayCommand(() => SortBy(nameof(Contact.Email)));
-            SortByCompanyCommand = new RelayCommand(() => SortBy(nameof(Contact.Company)));
+            EditCommand = new RelayCommand(param => EditSelected(param as Contact), _ => true);
+            SortByNameCommand = new RelayCommand(() => SortBy(nameof(Contact.FirstName)));
             SortByUsedCommand = new RelayCommand(() => SortBy(nameof(Contact.Used)));
-            SortByDateCommand = new RelayCommand(() => SortBy(nameof(Contact.ModifiedDate)));
+            ContactDoubleClickCommand = new RelayCommand(OnContactDoubleClick);
+            CancelEditCommand = new RelayCommand(CancelEdit);
         }
 
         private bool FilterContact(object obj)
@@ -84,68 +95,207 @@ namespace ContactsManager.ViewModels
             if (string.IsNullOrWhiteSpace(SearchText)) return true;
             var q = SearchText.Trim();
             return (c.FullName?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (c.Email?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (c.Phone?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (c.Company?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false);
+                || (c.Phone?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false);
         }
 
         private void AddContact()
         {
-            var updateWindow = new UpdateContactWindow();
-            if (updateWindow.ShowDialog() == true)
-            {
-                Contacts.Add(updateWindow.Contact);
-                SelectedContact = updateWindow.Contact;
-                ContactsView.Refresh();
-            }
+            _contactBeforeEdit = null; // New contact
+            var newContact = new Contact();
+            Contacts.Insert(0, newContact);
+            SelectedContact = newContact;
+            IsEditMode = true;
         }
 
-        private void DeleteSelected()
+        private void DeleteSelected(Contact? contact)
         {
-            if (SelectedContact is null) return;
-            var toRemove = SelectedContact;
-            SelectedContact = null;
-            Contacts.Remove(toRemove);
+            if (contact is null) return;
+            if (SelectedContact == contact)
+            {
+                SelectedContact = null;
+                IsEditMode = false; // Hide edit mode when deleting
+            }
+            Contacts.Remove(contact);
             ContactsView.Refresh();
         }
 
         private void SaveSelected()
         {
+            if (SelectedContact != null)
+            {
+                if (string.IsNullOrWhiteSpace(SelectedContact.FullName.Trim()))
+                {
+                    MessageBox.Show("Contact name cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(SelectedContact.Phone))
+                {
+                    MessageBox.Show("Phone number cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
             // Placeholder for persistence. For now just ensure view refresh.
             ContactsView.Refresh();
+            IsEditMode = false;
+            SelectedContact = null;
+            _contactBeforeEdit = null;
         }
 
         private void ImportContacts()
         {
-            // Placeholder for Excel import functionality
-            // This would open a file dialog and read Excel data using ClosedXML
-            // For now, just add a sample imported contact
-            var importedContact = new Contact
+            var openFileDialog = new OpenFileDialog
             {
-                FirstName = "Imported",
-                LastName = "Contact",
-                Email = "imported@example.com",
-                Phone = "+1 (555) 000-0000",
-                Company = "Import Corp"
+                Title = "Import Contacts from Excel",
+                Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls|All files (*.*)|*.*",
+                DefaultExt = "xlsx"
             };
-            Contacts.Add(importedContact);
-            ContactsView.Refresh();
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using var workbook = new XLWorkbook(openFileDialog.FileName);
+                    var worksheet = workbook.Worksheet(1); // Use first worksheet
+
+                    // Assume first row contains headers
+                    var rows = worksheet.RowsUsed().Skip(1); // Skip header row
+
+                    foreach (var row in rows)
+                    {
+                        // Expected columns: FirstName, LastName, Phone, Used
+                        var contact = new Contact
+                        {
+                            FirstName = row.Cell(1).GetValue<string>(),
+                            LastName = row.Cell(2).GetValue<string>(),
+                            Phone = row.Cell(3).GetValue<string>(),
+                            Used = row.Cell(4).TryGetValue(out bool used) && used
+                        };
+
+                        // Only add if we have at least a name
+                        if (!string.IsNullOrWhiteSpace(contact.FirstName) || !string.IsNullOrWhiteSpace(contact.LastName))
+                        {
+                            Contacts.Add(contact);
+                        }
+                    }
+
+                    ContactsView.Refresh();
+                    MessageBox.Show($"Successfully imported {rows.Count()} contacts.", "Import Complete",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error importing contacts: {ex.Message}", "Import Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void ExportContacts()
         {
-            // Placeholder for Excel export functionality
-            // This would create an Excel file using ClosedXML with all contacts
-            // Columns: Name, Surname, Phone Number, Used, Created Date, Modified Date
+            if (!Contacts.Any())
+            {
+                MessageBox.Show("No contacts to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                Title = "Export Contacts to Excel",
+                Filter = "Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*",
+                DefaultExt = "xlsx",
+                FileName = $"Contacts_{DateTime.Now:yyyy-MM-dd}.xlsx"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using var workbook = new XLWorkbook();
+                    var worksheet = workbook.Worksheets.Add("Contacts");
+
+                    // Headers
+                    worksheet.Cell(1, 1).Value = "First Name";
+                    worksheet.Cell(1, 2).Value = "Last Name";
+                    worksheet.Cell(1, 3).Value = "Phone";
+                    worksheet.Cell(1, 4).Value = "Used";
+
+                    // Format headers
+                    var headerRange = worksheet.Range(1, 1, 1, 4);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    // Data
+                    var row = 2;
+                    foreach (var contact in Contacts)
+                    {
+                        worksheet.Cell(row, 1).Value = contact.FirstName;
+                        worksheet.Cell(row, 2).Value = contact.LastName;
+                        worksheet.Cell(row, 3).Value = contact.Phone;
+                        worksheet.Cell(row, 4).Value = contact.Used;
+                        row++;
+                    }
+
+                    // Auto-fit columns
+                    worksheet.Columns().AdjustToContents();
+
+                    workbook.SaveAs(saveFileDialog.FileName);
+                    MessageBox.Show($"Successfully exported {Contacts.Count} contacts to {Path.GetFileName(saveFileDialog.FileName)}",
+                        "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error exporting contacts: {ex.Message}", "Export Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
-        private void EditSelected()
+        private void EditSelected(Contact? contact)
         {
-            if (SelectedContact == null) return;
+            if (contact == null) return;
 
-            var updateWindow = new UpdateContactWindow(SelectedContact);
-            updateWindow.ShowDialog();
-            ContactsView.Refresh();
+            _contactBeforeEdit = new Contact
+            {
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+                Phone = contact.Phone,
+                Used = contact.Used
+            };
+
+            SelectedContact = contact;
+            IsEditMode = true;
+        }
+
+        private void OnContactDoubleClick()
+        {
+            if (SelectedContact != null)
+            {
+                IsEditMode = true;
+            }
+        }
+
+        private void CancelEdit()
+        {
+            if (SelectedContact != null)
+            {
+                if (_contactBeforeEdit == null) // New contact was being added
+                {
+                    Contacts.Remove(SelectedContact);
+                }
+                else // Existing contact was being edited
+                {
+                    // Restore original values
+                    SelectedContact.FirstName = _contactBeforeEdit.FirstName;
+                    SelectedContact.LastName = _contactBeforeEdit.LastName;
+                    SelectedContact.Phone = _contactBeforeEdit.Phone;
+                    SelectedContact.Used = _contactBeforeEdit.Used;
+                }
+            }
+
+            IsEditMode = false;
+            SelectedContact = null;
+            _contactBeforeEdit = null;
         }
 
         private void SortBy(string propertyName)
