@@ -24,6 +24,7 @@ namespace ContactsManager.ViewModels
         private string _searchText = string.Empty;
         private string _currentSortProperty = nameof(Contact.FirstName);
         private ListSortDirection _currentSortDirection = ListSortDirection.Ascending;
+        private bool? _usedFilter = null;
         private bool _isEditMode = false;
         private bool _isLoading = false;
         private bool _hasUnsavedChanges = false;
@@ -114,6 +115,20 @@ namespace ContactsManager.ViewModels
         public string CurrentSortProperty => _currentSortProperty;
         public ListSortDirection CurrentSortDirection => _currentSortDirection;
 
+        public bool? UsedFilter
+        {
+            get => _usedFilter;
+            set
+            {
+                if (_usedFilter != value)
+                {
+                    _usedFilter = value;
+                    OnPropertyChanged();
+                    ContactsView.Refresh();
+                }
+            }
+        }
+
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand SaveCommand { get; }
@@ -124,6 +139,7 @@ namespace ContactsManager.ViewModels
         public ICommand SortByNameCommand { get; }
         public ICommand SortBySurnameCommand { get; }
         public ICommand SortByUsedCommand { get; }
+        public ICommand FilterByUsedCommand { get; }
         public ICommand ContactDoubleClickCommand { get; }
         public ICommand CancelEditCommand { get; }
         public ICommand ToggleUsedCommand { get; }
@@ -144,6 +160,7 @@ namespace ContactsManager.ViewModels
             SortByNameCommand = new RelayCommand(() => SortBy(nameof(Contact.FirstName)));
             SortBySurnameCommand = new RelayCommand(() => SortBy(nameof(Contact.LastName)));
             SortByUsedCommand = new RelayCommand(() => SortBy(nameof(Contact.Used)));
+            FilterByUsedCommand = new RelayCommand(ToggleUsedFilter);
             ContactDoubleClickCommand = new RelayCommand(OnContactDoubleClick);
             CancelEditCommand = new RelayCommand(CancelEdit);
             ToggleUsedCommand = new RelayCommand(param => ToggleUsed(param as Contact), _ => true);
@@ -152,13 +169,41 @@ namespace ContactsManager.ViewModels
             LoadDatabaseFile();
         }
 
+        private void ToggleUsedFilter()
+        {
+            if (UsedFilter == null)
+            {
+                UsedFilter = true; // All -> Used
+            }
+            else if (UsedFilter == true)
+            {
+                UsedFilter = false; // Used -> Unused
+            }
+            else
+            {
+                UsedFilter = null; // Unused -> All
+            }
+        }
+
         private bool FilterContact(object obj)
         {
             if (obj is not Contact c) return false;
-            if (string.IsNullOrWhiteSpace(SearchText)) return true;
-            var q = SearchText.Trim();
-            return (c.FullName?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (c.Phone?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false);
+
+            bool matchesSearch = true;
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var q = SearchText.Trim();
+                matchesSearch = (c.FullName?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
+                             || (c.Phone?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false);
+            }
+
+            bool matchesUsedFilter = true;
+            if (UsedFilter.HasValue)
+            {
+                matchesUsedFilter = c.Used == UsedFilter.Value;
+            }
+
+            return matchesSearch && matchesUsedFilter;
         }
 
         private void AddContact()
