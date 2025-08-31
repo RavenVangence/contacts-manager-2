@@ -16,6 +16,9 @@ namespace ContactsManager
     {
         private MainWindowViewModel ViewModel => (MainWindowViewModel)DataContext;
         private ContactsPage? _contactsPageInstance;
+        private bool _isTitleDragInitiated;
+        private Point _titleMouseDownPos;
+        private const double DragThreshold = 4; // pixels
 
         public MainWindow()
         {
@@ -147,7 +150,65 @@ namespace ContactsManager
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DragMove();
+            if (e.ClickCount == 2)
+            {
+                WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                return;
+            }
+
+            if (e.ButtonState == MouseButtonState.Pressed)
+            {
+                _isTitleDragInitiated = true;
+                _titleMouseDownPos = e.GetPosition(this);
+            }
+        }
+
+        private void TitleBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isTitleDragInitiated || e.LeftButton != MouseButtonState.Pressed)
+                return;
+
+            var currentPos = e.GetPosition(this);
+            if (Math.Abs(currentPos.X - _titleMouseDownPos.X) < DragThreshold &&
+                Math.Abs(currentPos.Y - _titleMouseDownPos.Y) < DragThreshold)
+            {
+                return; // not enough movement yet
+            }
+
+            // Movement exceeded threshold => start actual drag
+            _isTitleDragInitiated = false;
+
+            if (WindowState == WindowState.Maximized)
+            {
+                // Translate mouse position on window to screen, compute relative percent
+                var mousePos = e.GetPosition(this);
+                double percentX = mousePos.X / ActualWidth;
+                double targetWidth = RestoreBounds.Width;
+                if (double.IsNaN(targetWidth) || targetWidth <= 0)
+                {
+                    targetWidth = 1000; // fallback width
+                }
+                // Use screen coordinates to keep cursor over same relative X
+                var mouseScreen = PointToScreen(mousePos);
+                double screenX = mouseScreen.X;
+                WindowState = WindowState.Normal;
+                Left = screenX - targetWidth * percentX;
+                Top = Math.Max(SystemParameters.WorkArea.Top, Top);
+            }
+
+            try
+            {
+                DragMove();
+            }
+            catch { }
+        }
+
+        private void TitleBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isTitleDragInitiated)
+            {
+                _isTitleDragInitiated = false;
+            }
         }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
