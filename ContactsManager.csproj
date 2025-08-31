@@ -6,10 +6,25 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- Use app icon if provided -->
+    <ApplicationIcon Condition="Exists('Assets/app.ico')">Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <!-- Include icon as Resource for WPF pack URI if present -->
+  <ItemGroup Condition="Exists('Assets/app.ico')">
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+  <!-- Always include biome.svg and copy to output for runtime rendering -->
+  <ItemGroup>
+    <None Include="Assets\\biome.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="Svg.Skia" Version="3.0.6" />
   </ItemGroup>
 
 </Project>

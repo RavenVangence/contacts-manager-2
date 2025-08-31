@@ -32,6 +32,14 @@
                            TextAlignment="Center"
                            TextWrapping="Wrap"
                            Margin="0,0,0,24"/>
+                <TextBlock Text="Ndivhuwo Lodrick Munonela"
+                           Style="{StaticResource H2}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,16"/>
+                <TextBlock Text="ravenmunonela@gmail.com"
+                           Style="{StaticResource Body}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,16"/>
                 
             </StackPanel>
         </Border>

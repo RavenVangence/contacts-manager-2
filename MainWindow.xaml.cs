@@ -6,6 +6,8 @@ using System.Windows.Media;
 using System.ComponentModel;
 using ContactsManager.ViewModels;
 using ContactsManager.Pages;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace ContactsManager
 {
@@ -19,6 +21,7 @@ namespace ContactsManager
         private bool _isTitleDragInitiated;
         private Point _titleMouseDownPos;
         private const double DragThreshold = 4; // pixels
+        private const double DragVerticalCompensation = 6; // pixels to nudge window up on restore-drag
 
         public MainWindow()
         {
@@ -33,8 +36,111 @@ namespace ContactsManager
             // Navigate to home page on startup
             Loaded += (_, __) =>
             {
+                // Try load window icon: prefer .ico; fall back to rendering biome.svg
+                TryLoadWindowIcon();
+
                 NavigateToHome();
             };
+        }
+
+        private void TryLoadWindowIcon()
+        {
+            try
+            {
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var icoPath = Path.Combine(baseDir, "Assets", "app.ico");
+                if (File.Exists(icoPath))
+                {
+                    Icon = BitmapFrame.Create(new Uri(icoPath, UriKind.Absolute));
+                    return;
+                }
+
+                // Try SVG fallback
+                var svgPath = Path.Combine(baseDir, "Assets", "biome.svg");
+                if (File.Exists(svgPath))
+                {
+                    // Use the app's primary/success green for tint
+                    var tint = GetPrimaryColor();
+                    var bmp = RenderSvgToBitmap(svgPath, 256, 256, tint);
+                    if (bmp != null)
+                    {
+                        Icon = bmp;
+                    }
+                }
+            }
+            catch { /* ignore icon load errors */ }
+        }
+
+        private static System.Windows.Media.Color GetPrimaryColor()
+        {
+            try
+            {
+                if (Application.Current.Resources["PrimaryBrush"] is SolidColorBrush b)
+                {
+                    return b.Color;
+                }
+            }
+            catch { }
+            return (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0C8900");
+        }
+
+        private static BitmapSource? RenderSvgToBitmap(string svgFile, int width, int height, System.Windows.Media.Color? tintColor = null)
+        {
+            try
+            {
+                var skSvg = new Svg.Skia.SKSvg();
+                using (var ms = new MemoryStream(File.ReadAllBytes(svgFile)))
+                {
+                    skSvg.Load(ms);
+                }
+
+                var picture = skSvg.Picture;
+                if (picture == null)
+                    return null;
+
+                var info = new SkiaSharp.SKImageInfo(width, height);
+                using var surface = SkiaSharp.SKSurface.Create(info);
+                var canvas = surface.Canvas;
+                canvas.Clear(SkiaSharp.SKColors.Transparent);
+
+                // Scale to fit while preserving aspect
+                var picBounds = picture.CullRect;
+                float scale = Math.Min(width / picBounds.Width, height / picBounds.Height);
+                canvas.Translate(width / 2f, height / 2f);
+                canvas.Scale(scale);
+                canvas.Translate(-picBounds.MidX, -picBounds.MidY);
+                // Optional tint to match Success/Primary green
+                if (tintColor.HasValue)
+                {
+                    var c = tintColor.Value;
+                    var skc = new SkiaSharp.SKColor(c.R, c.G, c.B, c.A);
+                    using var paint = new SkiaSharp.SKPaint
+                    {
+                        IsAntialias = true,
+                        ColorFilter = SkiaSharp.SKColorFilter.CreateBlendMode(skc, SkiaSharp.SKBlendMode.SrcIn)
+                    };
+                    canvas.SaveLayer(paint);
+                    canvas.DrawPicture(picture);
+                    canvas.Restore();
+                }
+                else
+                {
+                    canvas.DrawPicture(picture);
+                }
+                canvas.Flush();
+
+                using var image = surface.Snapshot();
+                using var data = image.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
+                using var pngStream = new MemoryStream(data.ToArray());
+                var decoder = new PngBitmapDecoder(pngStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                var frame = decoder.Frames[0];
+                frame.Freeze();
+                return frame;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public void NavigateToHome()
@@ -188,12 +294,19 @@ namespace ContactsManager
                 {
                     targetWidth = 1000; // fallback width
                 }
-                // Use screen coordinates to keep cursor over same relative X
+                // Convert screen point to WPF (device-independent units) to avoid DPI offsets
                 var mouseScreen = PointToScreen(mousePos);
-                double screenX = mouseScreen.X;
+                Point mouseDiu = mouseScreen;
+                var src = PresentationSource.FromVisual(this);
+                if (src?.CompositionTarget != null)
+                {
+                    mouseDiu = src.CompositionTarget.TransformFromDevice.Transform(mouseScreen);
+                }
+
                 WindowState = WindowState.Normal;
-                Left = screenX - targetWidth * percentX;
-                Top = Math.Max(SystemParameters.WorkArea.Top, Top);
+                // Keep cursor over the same relative X, and align Y exactly under cursor
+                Left = mouseDiu.X - targetWidth * percentX;
+                Top = mouseDiu.Y - mousePos.Y - DragVerticalCompensation;
             }
 
             try

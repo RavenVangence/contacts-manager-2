@@ -58,20 +58,20 @@
                        TargetType="Button"
                        BasedOn="{StaticResource NavButton}">
                         <Setter Property="Content"
-                                        Value="&#xE922;"/>
+                                Value="&#xE922;"/>
                         <!-- Maximize -->
                         <Setter Property="ToolTip"
-                                        Value="Maximize"/>
+                                Value="Maximize"/>
                         <Setter Property="FontFamily"
-                                        Value="Segoe MDL2 Assets"/>
+                                Value="Segoe MDL2 Assets"/>
                         <Style.Triggers>
                                 <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                Value="Maximized">
+                                             Value="Maximized">
                                         <Setter Property="Content"
-                                                        Value="&#xE923;"/>
+                                                Value="&#xE923;"/>
                                         <!-- Restore -->
                                         <Setter Property="ToolTip"
-                                                        Value="Restore Down"/>
+                                                Value="Restore Down"/>
                                 </DataTrigger>
                         </Style.Triggers>
                 </Style>
