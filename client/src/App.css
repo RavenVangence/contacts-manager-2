@@ -1,0 +1,337 @@
+/* WPF-style CSS for Contacts Manager */
+
+.app {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 300;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #f5c6cb;
+    margin-bottom: 20px;
+}
+
+.form-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.form-panel h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-weight: 500;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    padding: 8px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.form-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.filters-panel {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.search-group,
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-group label,
+.filter-group label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 14px;
+}
+
+.search-group input,
+.filter-group select {
+    padding: 6px 10px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.count {
+    margin-left: auto;
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.contacts-grid {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.grid-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr 1.5fr 80px 120px;
+    background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.grid-header .grid-cell {
+    padding: 15px 12px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.grid-header .grid-cell.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.grid-header .grid-cell.sortable:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.grid-body .grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr 1.5fr 80px 120px;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s ease;
+}
+
+.grid-body .grid-row:hover {
+    background-color: #f8f9fa;
+}
+
+.grid-body .grid-row:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+.grid-body .grid-row:nth-child(even):hover {
+    background-color: #f1f3f4;
+}
+
+.grid-cell {
+    padding: 12px;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #495057;
+}
+
+.grid-cell:last-child {
+    border-right: none;
+}
+
+.actions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-start;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-style: italic;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .app {
+        padding: 10px;
+    }
+    
+    .header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .filters-panel {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .count {
+        margin-left: 0;
+    }
+    
+    .grid-header,
+    .grid-body .grid-row {
+        grid-template-columns: 1fr 1fr 1fr;
+        font-size: 12px;
+    }
+    
+    .grid-cell:nth-child(4),
+    .grid-cell:nth-child(5),
+    .grid-cell:nth-child(6) {
+        display: none;
+    }
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #007bff;
+    cursor: pointer;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
