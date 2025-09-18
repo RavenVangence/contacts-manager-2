@@ -13,23 +13,27 @@ public class ExcelContactRepository : IContactRepository
     public ExcelContactRepository(ILogger<ExcelContactRepository>? logger = null)
     {
         _logger = logger;
-        
-        // First try the original location, then fall back to local file
-        _filePath = @"C:\Users\lodrickm\Documents\sa_contacts.xlsx";
-        
+
+        // Use local file in the application directory for single-server deployment
+        _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sa_contacts.xlsx");
+
+        // If running in development, use the source directory instead of bin folder
         if (!File.Exists(_filePath))
         {
-            // Try local file in the application directory
-            _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sa_contacts.xlsx");
+            var sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), "sa_contacts.xlsx");
+            if (File.Exists(sourceFilePath))
+            {
+                _filePath = sourceFilePath;
+            }
         }
-        
+
         LoadFromExcel();
     }
 
     private void LoadFromExcel()
     {
         _logger?.LogInformation($"Attempting to load Excel file from: {_filePath}");
-        
+
         if (!File.Exists(_filePath))
         {
             _logger?.LogWarning("Excel file not found, creating empty file");
@@ -42,11 +46,11 @@ public class ExcelContactRepository : IContactRepository
             _logger?.LogInformation("Excel file found, loading data...");
             using var workbook = new XLWorkbook(_filePath);
             var worksheet = workbook.Worksheet(1);
-            
+
             // Find the last row with data
             var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 1;
             _logger?.LogInformation($"Last row with data: {lastRow}");
-            
+
             // Skip header row (row 1)
             for (int row = 2; row <= lastRow; row++)
             {
@@ -54,9 +58,9 @@ public class ExcelContactRepository : IContactRepository
                 var lastName = worksheet.Cell(row, 2).GetString();
                 var phone = worksheet.Cell(row, 3).GetString();
                 var usedValue = worksheet.Cell(row, 4).GetString().ToLower();
-                
+
                 _logger?.LogDebug($"Row {row}: {firstName} {lastName} {phone} {usedValue}");
-                
+
                 if (string.IsNullOrWhiteSpace(firstName) && string.IsNullOrWhiteSpace(lastName))
                     continue;
 
@@ -68,10 +72,10 @@ public class ExcelContactRepository : IContactRepository
                     Phone = phone,
                     Used = usedValue == "true" || usedValue == "yes" || usedValue == "1"
                 };
-                
+
                 _contacts.Add(contact);
             }
-            
+
             _logger?.LogInformation($"Loaded {_contacts.Count} contacts from Excel");
         }
         catch (Exception ex)
@@ -79,7 +83,7 @@ public class ExcelContactRepository : IContactRepository
             // Log error and create empty file
             _logger?.LogError(ex, $"Error loading Excel file: {ex.Message}");
             CreateEmptyExcelFile();
-            
+
             // Add some sample data if Excel loading failed
             if (_contacts.Count == 0)
             {
@@ -96,28 +100,28 @@ public class ExcelContactRepository : IContactRepository
         try
         {
             _logger?.LogInformation($"Creating empty Excel file at: {_filePath}");
-            
+
             // Ensure directory exists
             var directory = Path.GetDirectoryName(_filePath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            
+
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Contacts");
-            
+
             // Add headers
             worksheet.Cell(1, 1).Value = "First Name";
             worksheet.Cell(1, 2).Value = "Last Name";
             worksheet.Cell(1, 3).Value = "Phone";
             worksheet.Cell(1, 4).Value = "Used";
-            
+
             // Format header row
             var headerRange = worksheet.Range(1, 1, 1, 4);
             headerRange.Style.Font.Bold = true;
             headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
-            
+
             workbook.SaveAs(_filePath);
             _logger?.LogInformation("Empty Excel file created successfully");
         }
@@ -132,36 +136,36 @@ public class ExcelContactRepository : IContactRepository
         try
         {
             _logger?.LogInformation($"Saving {_contacts.Count} contacts to Excel file: {_filePath}");
-            
+
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Contacts");
-            
+
             // Add headers
             worksheet.Cell(1, 1).Value = "First Name";
             worksheet.Cell(1, 2).Value = "Last Name";
             worksheet.Cell(1, 3).Value = "Phone";
             worksheet.Cell(1, 4).Value = "Used";
-            
+
             // Format header row
             var headerRange = worksheet.Range(1, 1, 1, 4);
             headerRange.Style.Font.Bold = true;
             headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
-            
+
             // Add data
             for (int i = 0; i < _contacts.Count; i++)
             {
                 var contact = _contacts[i];
                 var row = i + 2; // Start from row 2 (after headers)
-                
+
                 worksheet.Cell(row, 1).Value = contact.FirstName;
                 worksheet.Cell(row, 2).Value = contact.LastName;
                 worksheet.Cell(row, 3).Value = contact.Phone;
                 worksheet.Cell(row, 4).Value = contact.Used ? "TRUE" : "FALSE";
             }
-            
+
             // Auto-fit columns
             worksheet.Columns().AdjustToContents();
-            
+
             workbook.SaveAs(_filePath);
             _logger?.LogInformation("Excel file saved successfully");
         }
@@ -203,5 +207,20 @@ public class ExcelContactRepository : IContactRepository
         existing.Used = c.Used;
         SaveToExcel();
         return true;
+    }
+
+    public void SaveAll(List<Contact> contacts)
+    {
+        _logger?.LogInformation($"Saving all {contacts.Count} contacts to replace current data");
+
+        // Replace all contacts with the provided list
+        _contacts.Clear();
+        _contacts.AddRange(contacts);
+
+        // Update next ID to be one higher than the highest ID
+        _nextId = contacts.Any() ? contacts.Max(c => c.Id) + 1 : 1;
+
+        // Save to Excel
+        SaveToExcel();
     }
 }

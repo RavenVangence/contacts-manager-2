@@ -17,7 +17,7 @@
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header h1 {
@@ -45,7 +45,7 @@
 
 .btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary {
@@ -94,7 +94,7 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     border-left: 4px solid #007bff;
 }
@@ -142,7 +142,7 @@
 .form-group input[type="email"]:focus {
     outline: none;
     border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .form-group input[type="checkbox"] {
@@ -159,7 +159,7 @@
     background: white;
     padding: 15px 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -205,7 +205,7 @@
 .contacts-grid {
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
@@ -220,7 +220,7 @@
 
 .grid-header .grid-cell {
     padding: 15px 12px;
-    border-right: 1px solid rgba(255,255,255,0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .grid-header .grid-cell.sortable {
@@ -230,7 +230,7 @@
 }
 
 .grid-header .grid-cell.sortable:hover {
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .grid-body .grid-row {
@@ -278,7 +278,7 @@
     font-style: italic;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive design */
@@ -286,33 +286,33 @@
     .app {
         padding: 10px;
     }
-    
+
     .header {
         flex-direction: column;
         text-align: center;
         gap: 15px;
     }
-    
+
     .form-row {
         flex-direction: column;
     }
-    
+
     .filters-panel {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
     }
-    
+
     .count {
         margin-left: 0;
     }
-    
+
     .grid-header,
     .grid-body .grid-row {
         grid-template-columns: 1fr 1fr 1fr;
         font-size: 12px;
     }
-    
+
     .grid-cell:nth-child(4),
     .grid-cell:nth-child(5),
     .grid-cell:nth-child(6) {

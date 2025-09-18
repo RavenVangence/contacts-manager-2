@@ -37,4 +37,18 @@ public class ContactsController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult Delete(int id)
         => _repo.Delete(id) ? NoContent() : NotFound();
+
+    [HttpPost("save-all")]
+    public IActionResult SaveAll([FromBody] List<Contact> contacts)
+    {
+        try
+        {
+            _repo.SaveAll(contacts);
+            return Ok(new { message = "All contacts saved successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Error saving contacts: {ex.Message}" });
+        }
+    }
 }

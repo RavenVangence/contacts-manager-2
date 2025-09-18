@@ -9,4 +9,5 @@ public interface IContactRepository
     Contact Add(Contact c);
     bool Update(int id, Contact c);
     bool Delete(int id);
+    void SaveAll(List<Contact> contacts);
 }

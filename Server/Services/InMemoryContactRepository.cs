@@ -46,4 +46,14 @@ public class InMemoryContactRepository : IContactRepository
         existing.Used = c.Used;
         return true;
     }
+
+    public void SaveAll(List<Contact> contacts)
+    {
+        // Replace all contacts with the provided list
+        _contacts.Clear();
+        _contacts.AddRange(contacts);
+
+        // Update next ID to be one higher than the highest ID
+        _nextId = contacts.Any() ? contacts.Max(c => c.Id) + 1 : 1;
+    }
 }

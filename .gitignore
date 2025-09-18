@@ -23,6 +23,7 @@ Debug/
 Release/
 [Bb]uild/
 wwwroot/
+**/publish/
 
 # .NET Core
 project.lock.json

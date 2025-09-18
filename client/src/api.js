@@ -18,5 +18,6 @@ export const ContactsApi = {
     get: id => request(`/api/contacts/${id}`),
     create: c => request('/api/contacts', { method: 'POST', body: JSON.stringify(c) }),
     update: (id, c) => request(`/api/contacts/${id}`, { method: 'PUT', body: JSON.stringify(c) }),
-    remove: id => request(`/api/contacts/${id}`, { method: 'DELETE' })
+    remove: id => request(`/api/contacts/${id}`, { method: 'DELETE' }),
+    saveAll: contacts => request('/api/contacts/save-all', { method: 'POST', body: JSON.stringify(contacts) })
 };
